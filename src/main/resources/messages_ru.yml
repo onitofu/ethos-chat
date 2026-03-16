@@ -1,0 +1,18 @@
+command:
+  no-permission: "<red>У вас нет прав для использования этой команды."
+  usage: "<red>Использование: /chatcolor <игрок> <цвет|#RRGGBB|reset>"
+  player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
+  color-reset: "<green>Цвет чата для <white>{player}<green> сброшен."
+  color-set: "<green>Цвет чата для <white>{player}<green> изменён на <white>{color}<green>."
+  invalid-color: "<red>Неизвестный цвет '<white>{color}<red>'. Используйте название или #RRGGBB."
+
+hover:
+  ping: "Пинг"
+  world: "Мир"
+  worlds:
+    world: "Обычный мир"
+    world_nether: "Незер"
+    world_the_end: "Энд"
+    Сервер: "Обычный мир"
+    Сервер_nether: "Незер"                                                                                                                                                                                                      
+    Сервер_the_end: "Энд" 

@@ -1,0 +1,15 @@
+name: domya-chat
+version: '${version}'
+main: ru.nyansus.mc.domya_chat.DomyaChat
+api-version: '1.21'
+
+commands:
+  chatcolor:
+    description: Set a player's chat name color
+    usage: /<command> <player> <#RRGGBB|reset>
+    permission: domya.chat.color
+
+permissions:
+  domya.chat.color:
+    description: Allows setting player chat colors
+    default: op

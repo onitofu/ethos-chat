@@ -1,0 +1,18 @@
+command:
+  no-permission: "<red>You don't have permission to use this command."
+  usage: "<red>Usage: /chatcolor <player> <color|#RRGGBB|reset>"
+  player-not-found: "<red>Player '<white>{player}<red>' is not online."
+  color-reset: "<green>Reset chat color for <white>{player}<green>."
+  color-set: "<green>Set chat color for <white>{player}<green> to <white>{color}<green>."
+  invalid-color: "<red>Unknown color '<white>{color}<red>'. Use a color name or #RRGGBB."
+
+hover:
+  ping: "Ping"
+  world: "World"
+  worlds:
+    world: "Overworld"
+    world_nether: "Nether"
+    world_the_end: "The End"
+    Сервер: "Overworld"
+    Сервер_nether: "Nether"                                                                                                                                                                                                      
+    Сервер_the_end: "The End" 

@@ -1,0 +1,29 @@
+# Chat format. Placeholders: <player>, <message>
+# Gradient and hover are applied automatically to <player>.
+# Uses MiniMessage syntax: https://docs.advntr.dev/minimessage/format.html
+format: "<dark_gray>▶ <player> <dark_gray>» <gray><message>"
+
+# Who can use /chatcolor command: "op" (operators only) or "all" (everyone)
+command-access: op
+
+# Show colored names in the Tab menu
+tab-colors: true
+
+# Hue shift (in degrees, 0-360) for the gradient second color.
+# Set to 0 to disable gradient (single solid color).
+gradient-shift: 25
+
+# Default color palette for players without a custom color.
+# Colors are assigned based on UUID hash. Use color names or #RRGGBB.
+default-colors:
+  - dark_green
+  - dark_aqua
+  - dark_red
+  - dark_purple
+  - gold
+  - blue
+  - green
+  - aqua
+  - red
+  - light_purple
+  - yellow
