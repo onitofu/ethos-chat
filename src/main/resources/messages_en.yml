@@ -6,7 +6,36 @@ command:
   color-set: "<green>Set chat color for <white>{player}<green> to <white>{color}<green>."
   invalid-color: "<red>Unknown color '<white>{color}<red>'. Use a color name or #RRGGBB."
 
+rpname:
+  no-permission: "<red>You don't have permission to use this command."
+  usage: "<red>Usage: /rpname <player> <name|reset>"
+  player-not-found: "<red>Player '<white>{player}<red>' is not online."
+  set: "<green>Set RP name for <white>{player}<green> to <white>{name}<green>."
+  reset: "<green>Reset RP name for <white>{player}<green>."
+
+rprace:
+  no-permission: "<red>You don't have permission to use this command."
+  usage: "<red>Usage: /rprace <player> <race|reset>"
+  player-not-found: "<red>Player '<white>{player}<red>' is not online."
+  set: "<green>Set race for <white>{player}<green> to <white>{race}<green>."
+  reset: "<green>Reset race for <white>{player}<green>."
+
+realname:
+  usage: "<red>Usage: /realname <rp-name>"
+  found: "<green>RP name '<white>{name}<green>' belongs to <white>{player}<green>."
+  not-found: "<red>No online player with RP name '<white>{name}<red>' found."
+
+admin:
+  no-permission: "<red>You don't have permission to use this command."
+  usage: "<red>Usage: /domyachat reload"
+  reloaded: "<green>Configuration reloaded."
+
+chat:
+  local-prefix: "L"
+  global-prefix: "G"
+
 hover:
+  nickname: "Nickname"
   ping: "Ping"
   world: "World"
   worlds:

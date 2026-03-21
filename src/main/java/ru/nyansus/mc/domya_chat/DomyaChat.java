@@ -2,42 +2,137 @@ package ru.nyansus.mc.domya_chat;
 
 import java.io.File;
 import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.nyansus.mc.domya_chat.chat.ChatListener;
+import ru.nyansus.mc.domya_chat.chat.TabColorUpdater;
+import ru.nyansus.mc.domya_chat.color.PlayerColorManager;
+import ru.nyansus.mc.domya_chat.color.PlayerColorStorage;
+import ru.nyansus.mc.domya_chat.color.YamlPlayerColorStorage;
+import ru.nyansus.mc.domya_chat.command.ChatColorCommand;
+import ru.nyansus.mc.domya_chat.command.DomyaChatCommand;
+import ru.nyansus.mc.domya_chat.command.RealNameCommand;
+import ru.nyansus.mc.domya_chat.command.RpNameCommand;
+import ru.nyansus.mc.domya_chat.command.RpRaceCommand;
+import ru.nyansus.mc.domya_chat.rpname.NametagManager;
+import ru.nyansus.mc.domya_chat.rpname.RpNameManager;
+import ru.nyansus.mc.domya_chat.rpname.RpNameStorage;
+import ru.nyansus.mc.domya_chat.rpname.YamlRpNameStorage;
 
 public class DomyaChat extends JavaPlugin {
 
-    private static final String DEFAULT_FORMAT = "<dark_gray>▶ <player> <dark_gray>» <gray><message>";
+    private static final String DEFAULT_FORMAT =
+            "<dark_gray>▶ <player> <dark_gray>» <gray><message>";
+
+    private Messages messages;
+    private NametagManager nametagManager;
+    private TabColorUpdater tabUpdater;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        Messages messages = new Messages(this);
+        messages = new Messages(this);
         PlayerColorStorage storage = new YamlPlayerColorStorage(
                 new File(getDataFolder(), "players.yml"), getLogger());
-        float gradientShift = (float) getConfig().getDouble("gradient-shift", 25);
         List<String> defaultColors = getConfig().getStringList("default-colors");
         if (defaultColors.isEmpty()) {
-            defaultColors = List.of("dark_green", "dark_aqua", "dark_red", "dark_purple",
-                    "gold", "blue", "green", "aqua", "red", "light_purple", "yellow");
+            defaultColors = List.of("dark_green", "dark_aqua", "dark_red",
+                    "dark_purple", "gold", "blue", "green", "aqua",
+                    "red", "light_purple", "yellow");
         }
-        PlayerColorManager colorManager = new PlayerColorManager(storage, gradientShift, defaultColors);
-        ChatListener listener = new ChatListener(colorManager, messages,
-                () -> getConfig().getString("format", DEFAULT_FORMAT));
+        PlayerColorManager colorManager = new PlayerColorManager(storage,
+                (float) getConfig().getDouble("gradient-shift", 25),
+                defaultColors);
+        RpNameStorage rpNameStorage = new YamlRpNameStorage(
+                new File(getDataFolder(), "rpnames.yml"), getLogger());
+        RpNameManager rpNameManager = new RpNameManager(rpNameStorage);
+        ChatListener listener = new ChatListener(colorManager, rpNameManager,
+                messages,
+                () -> getConfig().getString("format", DEFAULT_FORMAT),
+                this::loadLocalChatConfig,
+                () -> new int[]{
+                    getConfig().getInt("ping-thresholds.good", 50),
+                    getConfig().getInt("ping-thresholds.bad", 150)});
         getServer().getPluginManager().registerEvents(listener, this);
-        String access = getConfig().getString("command-access", "op");
+        applyPermissions();
+        tabUpdater = new TabColorUpdater(colorManager,
+                () -> getConfig().getBoolean("tab-colors", true));
+        getServer().getPluginManager().registerEvents(tabUpdater, this);
+        nametagManager = new NametagManager(
+                rpNameManager, colorManager, this, this::loadNametagConfig);
+        getServer().getPluginManager().registerEvents(nametagManager, this);
+        ChatColorCommand colorCommand = new ChatColorCommand(
+                colorManager, messages, tabUpdater, nametagManager);
+        getCommand("chatcolor").setExecutor(colorCommand);
+        getCommand("chatcolor").setTabCompleter(colorCommand);
+        RpNameCommand rpNameCommand =
+                new RpNameCommand(rpNameManager, messages, nametagManager);
+        getCommand("rpname").setExecutor(rpNameCommand);
+        getCommand("rpname").setTabCompleter(rpNameCommand);
+        RpRaceCommand rpRaceCommand =
+                new RpRaceCommand(rpNameManager, messages, nametagManager);
+        getCommand("rprace").setExecutor(rpRaceCommand);
+        getCommand("rprace").setTabCompleter(rpRaceCommand);
+        RealNameCommand realNameCommand =
+                new RealNameCommand(rpNameManager, messages);
+        getCommand("realname").setExecutor(realNameCommand);
+        getCommand("realname").setTabCompleter(realNameCommand);
+        DomyaChatCommand domyaChatCommand =
+                new DomyaChatCommand(this, messages);
+        getCommand("domyachat").setExecutor(domyaChatCommand);
+    }
+
+    @Override
+    public void onDisable() {
+        if (nametagManager != null) {
+            nametagManager.removeAll();
+        }
+    }
+
+    public void performReload() {
+        reloadConfig();
+        messages.reload();
+        applyPermissions();
+        nametagManager.refreshAll();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            tabUpdater.updateTabName(player);
+        }
+    }
+
+    private void applyPermissions() {
+        applyPermission("chatcolor-access", "domya.chat.color");
+        applyPermission("rpname-access", "domya.chat.rpname");
+    }
+
+    private void applyPermission(String configKey, String permissionName) {
+        String access = getConfig().getString(configKey, "op");
         PermissionDefault permDefault = "all".equalsIgnoreCase(access)
                 ? PermissionDefault.TRUE : PermissionDefault.OP;
-        Permission perm = getServer().getPluginManager().getPermission("domya.chat.color");
+        Permission perm = getServer().getPluginManager().getPermission(permissionName);
         if (perm != null) {
             perm.setDefault(permDefault);
         }
-        boolean tabColors = getConfig().getBoolean("tab-colors", true);
-        TabColorUpdater tabUpdater = new TabColorUpdater(colorManager, tabColors);
-        getServer().getPluginManager().registerEvents(tabUpdater, this);
-        ChatColorCommand command = new ChatColorCommand(colorManager, messages, tabUpdater);
-        getCommand("chatcolor").setExecutor(command);
-        getCommand("chatcolor").setTabCompleter(command);
+    }
+
+    private ChatListener.LocalChatConfig loadLocalChatConfig() {
+        String defLocal = "<dark_gray>[<gray><prefix><dark_gray>] ";
+        String defGlobal = "<dark_gray>[<yellow><prefix><dark_gray>] ";
+        return new ChatListener.LocalChatConfig(
+                getConfig().getBoolean("local-chat.enabled", false),
+                getConfig().getInt("local-chat.radius", 128),
+                getConfig().getString("local-chat.global-prefix", "!"),
+                getConfig().getString("local-chat.local-format", defLocal),
+                getConfig().getString("local-chat.global-format", defGlobal));
+    }
+
+    private NametagManager.NametagConfig loadNametagConfig() {
+        return new NametagManager.NametagConfig(
+                (float) getConfig().getDouble("nametag.name-offset", 0.4),
+                (float) getConfig().getDouble("nametag.race-offset", 0.2),
+                (float) getConfig().getDouble("nametag.race-scale", 0.6),
+                getConfig().getString("nametag.race-format", "\u00AB{race}\u00BB"));
     }
 }

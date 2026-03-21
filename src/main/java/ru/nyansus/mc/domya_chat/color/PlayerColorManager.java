@@ -1,13 +1,15 @@
-package ru.nyansus.mc.domya_chat;
+package ru.nyansus.mc.domya_chat.color;
 
 import java.util.List;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 public class PlayerColorManager {
 
-    static final List<NamedTextColor> NAMED_COLORS = List.of(
+    public static final List<NamedTextColor> NAMED_COLORS = List.of(
             NamedTextColor.DARK_GREEN,
             NamedTextColor.DARK_AQUA,
             NamedTextColor.DARK_RED,
@@ -43,6 +45,13 @@ public class PlayerColorManager {
         float[] hsl = ColorConverter.hexToHsl(hex1);
         float hue2 = (hsl[0] + gradientShift) % 360;
         return new String[]{hex1, ColorConverter.hslToHex(hue2, hsl[1], hsl[2])};
+    }
+
+    public Component renderGradient(String text, Player player) {
+        String[] colors = getGradientColors(player);
+        MiniMessage mm = MiniMessage.miniMessage();
+        return mm.deserialize("<gradient:" + colors[0] + ":" + colors[1] + ">"
+                + mm.escapeTags(text) + "</gradient>");
     }
 
     public void setColor(UUID uuid, String hex) {

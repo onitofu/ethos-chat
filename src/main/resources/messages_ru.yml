@@ -6,7 +6,36 @@ command:
   color-set: "<green>Цвет чата для <white>{player}<green> изменён на <white>{color}<green>."
   invalid-color: "<red>Неизвестный цвет '<white>{color}<red>'. Используйте название или #RRGGBB."
 
+rpname:
+  no-permission: "<red>У вас нет прав для использования этой команды."
+  usage: "<red>Использование: /rpname <игрок> <имя|reset>"
+  player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
+  set: "<green>РП имя для <white>{player}<green> изменено на <white>{name}<green>."
+  reset: "<green>РП имя для <white>{player}<green> сброшено."
+
+rprace:
+  no-permission: "<red>У вас нет прав для использования этой команды."
+  usage: "<red>Использование: /rprace <игрок> <раса|reset>"
+  player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
+  set: "<green>Раса для <white>{player}<green> изменена на <white>{race}<green>."
+  reset: "<green>Раса для <white>{player}<green> сброшена."
+
+realname:
+  usage: "<red>Использование: /realname <рп-имя>"
+  found: "<green>РП имя '<white>{name}<green>' принадлежит игроку <white>{player}<green>."
+  not-found: "<red>Игрок с РП именем '<white>{name}<red>' не найден среди онлайн игроков."
+
+admin:
+  no-permission: "<red>У вас нет прав для использования этой команды."
+  usage: "<red>Использование: /domyachat reload"
+  reloaded: "<green>Конфигурация перезагружена."
+
+chat:
+  local-prefix: "Л"
+  global-prefix: "Г"
+
 hover:
+  nickname: "Ник"
   ping: "Пинг"
   world: "Мир"
   worlds:

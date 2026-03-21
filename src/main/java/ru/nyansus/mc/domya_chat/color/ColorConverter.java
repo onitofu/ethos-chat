@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat;
+package ru.nyansus.mc.domya_chat.color;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 

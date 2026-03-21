@@ -8,8 +8,29 @@ commands:
     description: Set a player's chat name color
     usage: /<command> <player> <#RRGGBB|reset>
     permission: domya.chat.color
+  rpname:
+    description: Set a player's RP display name
+    usage: /<command> <player> <name|reset>
+    permission: domya.chat.rpname
+  rprace:
+    description: Set a player's RP race
+    usage: /<command> <player> <race|reset>
+    permission: domya.chat.rpname
+  realname:
+    description: Look up a player's real name by their RP name
+    usage: /<command> <rp-name>
+  domyachat:
+    description: Plugin admin commands
+    usage: /<command> reload
+    permission: domya.chat.admin
 
 permissions:
   domya.chat.color:
     description: Allows setting player chat colors
+    default: op
+  domya.chat.rpname:
+    description: Allows setting player RP names
+    default: op
+  domya.chat.admin:
+    description: Allows using /domyachat admin commands
     default: op

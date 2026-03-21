@@ -4,7 +4,10 @@
 format: "<dark_gray>▶ <player> <dark_gray>» <gray><message>"
 
 # Who can use /chatcolor command: "op" (operators only) or "all" (everyone)
-command-access: op
+chatcolor-access: op
+
+# Who can use /rpname and /rprace commands: "op" (operators only) or "all" (everyone)
+rpname-access: op
 
 # Show colored names in the Tab menu
 tab-colors: true
@@ -12,6 +15,33 @@ tab-colors: true
 # Hue shift (in degrees, 0-360) for the gradient second color.
 # Set to 0 to disable gradient (single solid color).
 gradient-shift: 25
+
+# Ping color thresholds (ms) for the hover tooltip.
+# Below good-ping: green, below bad-ping: yellow, above: red.
+ping-thresholds:
+  good: 50
+  bad: 150
+
+# Nametag settings for RP name/race displays above player heads.
+nametag:
+  # Height offset for the RP name display
+  name-offset: 0.4
+  # Height offset for the race display
+  race-offset: 0.2
+  # Race display scale (0.0-1.0)
+  race-scale: 0.6
+  # Race format. Placeholder: {race}
+  race-format: "\u00AB{race}\u00BB"
+
+# Local/global chat. Set to false for vanilla-style chat (everyone sees everything).
+local-chat:
+  enabled: true
+  radius: 128
+  global-prefix: "!"
+  # Format for local/global prefixes. Placeholder: <prefix>
+  # The prefix letter (Л/G) is provided by the messages file.
+  local-format: "<dark_gray>[<gray><prefix><dark_gray>] "
+  global-format: "<dark_gray>[<yellow><prefix><dark_gray>] "
 
 # Default color palette for players without a custom color.
 # Colors are assigned based on UUID hash. Use color names or #RRGGBB.

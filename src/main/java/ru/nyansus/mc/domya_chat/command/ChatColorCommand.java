@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat;
+package ru.nyansus.mc.domya_chat.command;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +9,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import ru.nyansus.mc.domya_chat.Messages;
+import ru.nyansus.mc.domya_chat.chat.TabColorUpdater;
+import ru.nyansus.mc.domya_chat.color.ColorConverter;
+import ru.nyansus.mc.domya_chat.color.PlayerColorManager;
+import ru.nyansus.mc.domya_chat.rpname.NametagManager;
 
 public class ChatColorCommand implements CommandExecutor, TabCompleter {
 
@@ -17,11 +22,14 @@ public class ChatColorCommand implements CommandExecutor, TabCompleter {
     private final PlayerColorManager colorManager;
     private final Messages messages;
     private final TabColorUpdater tabUpdater;
+    private final NametagManager nametagManager;
 
-    public ChatColorCommand(PlayerColorManager colorManager, Messages messages, TabColorUpdater tabUpdater) {
+    public ChatColorCommand(PlayerColorManager colorManager, Messages messages,
+                            TabColorUpdater tabUpdater, NametagManager nametagManager) {
         this.colorManager = colorManager;
         this.messages = messages;
         this.tabUpdater = tabUpdater;
+        this.nametagManager = nametagManager;
     }
 
     @Override
@@ -42,6 +50,7 @@ public class ChatColorCommand implements CommandExecutor, TabCompleter {
         if (args[1].equalsIgnoreCase("reset")) {
             colorManager.resetColor(target.getUniqueId());
             tabUpdater.updateTabName(target);
+            nametagManager.refreshNametag(target);
             messages.send(sender, "command.color-reset", "{player}", target.getName());
             return true;
         }
@@ -52,6 +61,7 @@ public class ChatColorCommand implements CommandExecutor, TabCompleter {
         }
         colorManager.setColor(target.getUniqueId(), hex);
         tabUpdater.updateTabName(target);
+        nametagManager.refreshNametag(target);
         messages.send(sender, "command.color-set", "{player}", target.getName(), "{color}", args[1].toLowerCase());
         return true;
     }
@@ -59,10 +69,7 @@ public class ChatColorCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
-            return Bukkit.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                    .collect(Collectors.toList());
+            return TabCompleteHelper.completePlayerNames(args[0]);
         }
         if (args.length == 2) {
             List<String> options = PlayerColorManager.NAMED_COLORS.stream()
