@@ -1,7 +1,8 @@
-# Chat format. Placeholders: <player>, <message>
+# Chat format. Placeholders: <player>, <message>, <title>
 # Gradient and hover are applied automatically to <player>.
+# <title> is resolved from domya-fate via PlaceholderAPI (empty if no title or plugin missing).
 # Uses MiniMessage syntax: https://docs.advntr.dev/minimessage/format.html
-format: "<dark_gray>▶ <player> <dark_gray>» <gray><message>"
+format: "<dark_gray>▶ <title><player> <dark_gray>» <gray><message>"
 
 # Who can use /chatcolor command: "op" (operators only) or "all" (everyone)
 chatcolor-access: op
@@ -9,8 +10,12 @@ chatcolor-access: op
 # Who can use /rpname and /rprace commands: "op" (operators only) or "all" (everyone)
 rpname-access: op
 
-# Show colored names in the Tab menu
+# Show colored names and ping in the Tab menu
 tab-colors: true
+
+# Tab list update interval in ticks (20 ticks = 1 second).
+# Controls how often ping values refresh. Default: 200 (10 seconds).
+tab-update-interval: 200
 
 # Hue shift (in degrees, 0-360) for the gradient second color.
 # Set to 0 to disable gradient (single solid color).

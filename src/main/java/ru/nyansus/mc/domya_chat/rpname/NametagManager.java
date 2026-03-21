@@ -87,7 +87,7 @@ public class NametagManager implements Listener {
                 || !(event.getMount() instanceof Player mount)) {
             return;
         }
-        hideNametag(mount);
+        detachNametag(mount);
     }
 
     @EventHandler
@@ -97,22 +97,31 @@ public class NametagManager implements Listener {
             return;
         }
         Bukkit.getScheduler().runTaskLater(plugin,
-                () -> showNametag(mount), 1L);
+                () -> attachNametag(mount), 1L);
     }
 
     private void hideNametag(Player player) {
+        setNametagVisible(player, false);
+    }
+
+    private void showNametag(Player player) {
+        setNametagVisible(player, true);
+    }
+
+    private void detachNametag(Player player) {
         List<TextDisplay> list = displays.get(player.getUniqueId());
         if (list == null) {
             return;
         }
         for (TextDisplay display : list) {
             if (display != null && !display.isDead()) {
+                display.setVisibleByDefault(false);
                 player.removePassenger(display);
             }
         }
     }
 
-    private void showNametag(Player player) {
+    private void attachNametag(Player player) {
         if (!player.isOnline()) {
             return;
         }
@@ -123,6 +132,19 @@ public class NametagManager implements Listener {
         for (TextDisplay display : list) {
             if (display != null && !display.isDead()) {
                 player.addPassenger(display);
+                display.setVisibleByDefault(true);
+            }
+        }
+    }
+
+    private void setNametagVisible(Player player, boolean visible) {
+        List<TextDisplay> list = displays.get(player.getUniqueId());
+        if (list == null) {
+            return;
+        }
+        for (TextDisplay display : list) {
+            if (display != null && !display.isDead()) {
+                display.setVisibleByDefault(visible);
             }
         }
     }

@@ -25,7 +25,7 @@ import ru.nyansus.mc.domya_chat.rpname.YamlRpNameStorage;
 public class DomyaChat extends JavaPlugin {
 
     private static final String DEFAULT_FORMAT =
-            "<dark_gray>▶ <player> <dark_gray>» <gray><message>";
+            "<dark_gray>▶ <title><player> <dark_gray>» <gray><message>";
 
     private Messages messages;
     private NametagManager nametagManager;
@@ -49,17 +49,20 @@ public class DomyaChat extends JavaPlugin {
         RpNameStorage rpNameStorage = new YamlRpNameStorage(
                 new File(getDataFolder(), "rpnames.yml"), getLogger());
         RpNameManager rpNameManager = new RpNameManager(rpNameStorage);
+        java.util.function.Supplier<int[]> pingThresholds = () -> new int[]{
+                getConfig().getInt("ping-thresholds.good", 50),
+                getConfig().getInt("ping-thresholds.bad", 150)};
         ChatListener listener = new ChatListener(colorManager, rpNameManager,
                 messages,
                 () -> getConfig().getString("format", DEFAULT_FORMAT),
-                this::loadLocalChatConfig,
-                () -> new int[]{
-                    getConfig().getInt("ping-thresholds.good", 50),
-                    getConfig().getInt("ping-thresholds.bad", 150)});
+                this::loadLocalChatConfig, pingThresholds);
         getServer().getPluginManager().registerEvents(listener, this);
         applyPermissions();
         tabUpdater = new TabColorUpdater(colorManager,
-                () -> getConfig().getBoolean("tab-colors", true));
+                () -> getConfig().getBoolean("tab-colors", true),
+                pingThresholds);
+        tabUpdater.startUpdateTask(this,
+                getConfig().getLong("tab-update-interval", 200L));
         getServer().getPluginManager().registerEvents(tabUpdater, this);
         nametagManager = new NametagManager(
                 rpNameManager, colorManager, this, this::loadNametagConfig);

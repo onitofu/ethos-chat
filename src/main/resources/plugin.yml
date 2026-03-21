@@ -2,6 +2,8 @@ name: domya-chat
 version: '${version}'
 main: ru.nyansus.mc.domya_chat.DomyaChat
 api-version: '1.21'
+softdepend:
+  - PlaceholderAPI
 
 commands:
   chatcolor:

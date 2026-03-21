@@ -10,6 +10,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -74,9 +75,13 @@ public class ChatListener implements Listener {
             Component playerComponent = colorManager
                     .renderGradient(rpNameManager.getDisplayName(source), source)
                     .hoverEvent(HoverEvent.showText(hover));
+            String titlePrefix = resolveTitle(source);
             TagResolver.Builder resolverBuilder = TagResolver.builder()
                     .resolver(Placeholder.component("player", playerComponent))
-                    .resolver(Placeholder.unparsed("message", finalMessage));
+                    .resolver(Placeholder.unparsed("message", finalMessage))
+                    .resolver(Placeholder.component("title",
+                            titlePrefix.isEmpty() ? Component.empty()
+                            : miniMessage.deserialize(titlePrefix + " ")));
             String finalFormat = format;
             if (localChatConfig.enabled()) {
                 String prefixKey = global ? "chat.global-prefix" : "chat.local-prefix";
@@ -108,6 +113,14 @@ public class ChatListener implements Listener {
                 .append(" <dark_gray>» <aqua>")
                 .append(messages.getWorld(source.getWorld().getName(), locale));
         return miniMessage.deserialize(hover.toString());
+    }
+
+    private String resolveTitle(Player player) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            return "";
+        }
+        return me.clip.placeholderapi.PlaceholderAPI
+                .setPlaceholders(player, "%domya_title_colored%");
     }
 
     private String pingColor(int ping) {
