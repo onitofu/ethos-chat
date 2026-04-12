@@ -79,10 +79,11 @@ public class NametagManager implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
         if (event.isSneaking()) {
-            hideNametag(event.getPlayer());
+            hideNametag(player);
         } else {
-            syncVisibility(event.getPlayer());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> syncVisibility(player), 1L);
         }
     }
 
