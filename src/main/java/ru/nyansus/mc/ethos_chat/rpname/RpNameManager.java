@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.rpname;
+package ru.nyansus.mc.ethos_chat.rpname;
 
 import java.util.Optional;
 import java.util.UUID;

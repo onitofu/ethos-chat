@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.command;
+package ru.nyansus.mc.ethos_chat.command;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,9 +8,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import ru.nyansus.mc.domya_chat.Messages;
-import ru.nyansus.mc.domya_chat.rpname.NametagManager;
-import ru.nyansus.mc.domya_chat.rpname.RpNameManager;
+import ru.nyansus.mc.ethos_chat.Messages;
+import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
+import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public abstract class BaseRpCommand implements CommandExecutor, TabCompleter {
 

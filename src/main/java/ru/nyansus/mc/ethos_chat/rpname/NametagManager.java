@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.rpname;
+package ru.nyansus.mc.ethos_chat.rpname;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,11 +31,12 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-import ru.nyansus.mc.domya_chat.color.PlayerColorManager;
+import ru.nyansus.mc.ethos_chat.color.PlayerColorManager;
 
 public class NametagManager implements Listener {
 
-    private static final String TEAM_NAME = "domya_rp_hide";
+    private static final String TEAM_NAME = "ethos_rp_hide";
+    private static final String LEGACY_TEAM_NAME = "domya_rp_hide";
     private static final AxisAngle4f NO_ROTATION = new AxisAngle4f(0, 0, 0, 1);
 
     private final RpNameManager rpNameManager;
@@ -281,6 +282,10 @@ public class NametagManager implements Listener {
 
     private Team getOrCreateTeam() {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team legacy = scoreboard.getTeam(LEGACY_TEAM_NAME);
+        if (legacy != null) {
+            legacy.unregister();
+        }
         Team team = scoreboard.getTeam(TEAM_NAME);
         if (team == null) {
             team = scoreboard.registerNewTeam(TEAM_NAME);

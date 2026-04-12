@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat;
+package ru.nyansus.mc.ethos_chat;
 
 import java.io.File;
 import java.util.List;
@@ -7,22 +7,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.nyansus.mc.domya_chat.chat.ChatListener;
-import ru.nyansus.mc.domya_chat.chat.TabColorUpdater;
-import ru.nyansus.mc.domya_chat.color.PlayerColorManager;
-import ru.nyansus.mc.domya_chat.color.PlayerColorStorage;
-import ru.nyansus.mc.domya_chat.color.YamlPlayerColorStorage;
-import ru.nyansus.mc.domya_chat.command.ChatColorCommand;
-import ru.nyansus.mc.domya_chat.command.DomyaChatCommand;
-import ru.nyansus.mc.domya_chat.command.RealNameCommand;
-import ru.nyansus.mc.domya_chat.command.RpNameCommand;
-import ru.nyansus.mc.domya_chat.command.RpRaceCommand;
-import ru.nyansus.mc.domya_chat.rpname.NametagManager;
-import ru.nyansus.mc.domya_chat.rpname.RpNameManager;
-import ru.nyansus.mc.domya_chat.rpname.RpNameStorage;
-import ru.nyansus.mc.domya_chat.rpname.YamlRpNameStorage;
+import ru.nyansus.mc.ethos_chat.chat.ChatListener;
+import ru.nyansus.mc.ethos_chat.chat.TabColorUpdater;
+import ru.nyansus.mc.ethos_chat.color.PlayerColorManager;
+import ru.nyansus.mc.ethos_chat.color.PlayerColorStorage;
+import ru.nyansus.mc.ethos_chat.color.YamlPlayerColorStorage;
+import ru.nyansus.mc.ethos_chat.command.ChatColorCommand;
+import ru.nyansus.mc.ethos_chat.command.EthosChatCommand;
+import ru.nyansus.mc.ethos_chat.command.RealNameCommand;
+import ru.nyansus.mc.ethos_chat.command.RpNameCommand;
+import ru.nyansus.mc.ethos_chat.command.RpRaceCommand;
+import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
+import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
+import ru.nyansus.mc.ethos_chat.rpname.RpNameStorage;
+import ru.nyansus.mc.ethos_chat.rpname.YamlRpNameStorage;
 
-public class DomyaChat extends JavaPlugin {
+public class EthosChat extends JavaPlugin {
 
     private static final String DEFAULT_FORMAT =
             "<dark_gray>▶ <title><player> <dark_gray>» <gray><message>";
@@ -90,9 +90,9 @@ public class DomyaChat extends JavaPlugin {
                 new RealNameCommand(rpNameManager, messages);
         getCommand("realname").setExecutor(realNameCommand);
         getCommand("realname").setTabCompleter(realNameCommand);
-        DomyaChatCommand domyaChatCommand =
-                new DomyaChatCommand(this, messages);
-        getCommand("ethoschat").setExecutor(domyaChatCommand);
+        EthosChatCommand ethosChatCommand =
+                new EthosChatCommand(this, messages);
+        getCommand("ethoschat").setExecutor(ethosChatCommand);
     }
 
     @Override

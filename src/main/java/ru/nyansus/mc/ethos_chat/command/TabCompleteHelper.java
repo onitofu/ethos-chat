@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.command;
+package ru.nyansus.mc.ethos_chat.command;
 
 import java.util.List;
 import java.util.stream.Collectors;

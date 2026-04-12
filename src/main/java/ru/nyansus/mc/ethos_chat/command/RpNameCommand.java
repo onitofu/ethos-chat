@@ -1,9 +1,9 @@
-package ru.nyansus.mc.domya_chat.command;
+package ru.nyansus.mc.ethos_chat.command;
 
 import org.bukkit.entity.Player;
-import ru.nyansus.mc.domya_chat.Messages;
-import ru.nyansus.mc.domya_chat.rpname.NametagManager;
-import ru.nyansus.mc.domya_chat.rpname.RpNameManager;
+import ru.nyansus.mc.ethos_chat.Messages;
+import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
+import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public class RpNameCommand extends BaseRpCommand {
 

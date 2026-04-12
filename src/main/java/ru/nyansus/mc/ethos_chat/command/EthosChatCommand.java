@@ -1,19 +1,19 @@
-package ru.nyansus.mc.domya_chat.command;
+package ru.nyansus.mc.ethos_chat.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import ru.nyansus.mc.domya_chat.DomyaChat;
-import ru.nyansus.mc.domya_chat.Messages;
+import ru.nyansus.mc.ethos_chat.EthosChat;
+import ru.nyansus.mc.ethos_chat.Messages;
 
-public class DomyaChatCommand implements CommandExecutor {
+public class EthosChatCommand implements CommandExecutor {
 
     private static final String PERMISSION = "ethos.chat.admin";
 
-    private final DomyaChat plugin;
+    private final EthosChat plugin;
     private final Messages messages;
 
-    public DomyaChatCommand(DomyaChat plugin, Messages messages) {
+    public EthosChatCommand(EthosChat plugin, Messages messages) {
         this.plugin = plugin;
         this.messages = messages;
     }
