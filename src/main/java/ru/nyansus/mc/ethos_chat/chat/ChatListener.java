@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.chat;
+package ru.nyansus.mc.ethos_chat.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.Set;
@@ -14,9 +14,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import ru.nyansus.mc.domya_chat.Messages;
-import ru.nyansus.mc.domya_chat.color.PlayerColorManager;
-import ru.nyansus.mc.domya_chat.rpname.RpNameManager;
+import ru.nyansus.mc.ethos_chat.Messages;
+import ru.nyansus.mc.ethos_chat.color.PlayerColorManager;
+import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public class ChatListener implements Listener {
 

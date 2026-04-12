@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.chat;
+package ru.nyansus.mc.ethos_chat.chat;
 
 import java.util.HashMap;
 import java.util.Map;

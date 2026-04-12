@@ -1,4 +1,4 @@
-package ru.nyansus.mc.domya_chat.color;
+package ru.nyansus.mc.ethos_chat.color;
 
 import java.util.Optional;
 import java.util.UUID;
