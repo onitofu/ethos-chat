@@ -14,7 +14,7 @@ import ru.nyansus.mc.domya_chat.rpname.RpNameManager;
 
 public abstract class BaseRpCommand implements CommandExecutor, TabCompleter {
 
-    private static final String PERMISSION = "domya.chat.rpname";
+    private static final String PERMISSION = "ethos.chat.rpname";
 
     protected final RpNameManager rpNameManager;
     protected final Messages messages;

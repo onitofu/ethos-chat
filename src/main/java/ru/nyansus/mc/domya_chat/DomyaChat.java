@@ -52,15 +52,22 @@ public class DomyaChat extends JavaPlugin {
         java.util.function.Supplier<int[]> pingThresholds = () -> new int[]{
                 getConfig().getInt("ping-thresholds.good", 50),
                 getConfig().getInt("ping-thresholds.bad", 150)};
+        java.util.function.Supplier<String> titlePlaceholder =
+                () -> getConfig().getString("placeholders.title", "");
+        java.util.function.Supplier<String> karmaPlaceholder =
+                () -> getConfig().getString("placeholders.karma", "");
+        java.util.function.Supplier<String> titleWrap =
+                () -> getConfig().getString("placeholders.title-wrap", "<title>");
         ChatListener listener = new ChatListener(colorManager, rpNameManager,
                 messages,
                 () -> getConfig().getString("format", DEFAULT_FORMAT),
-                this::loadLocalChatConfig, pingThresholds);
+                this::loadLocalChatConfig, pingThresholds,
+                titlePlaceholder, titleWrap);
         getServer().getPluginManager().registerEvents(listener, this);
         applyPermissions();
         tabUpdater = new TabColorUpdater(colorManager,
                 () -> getConfig().getBoolean("tab-colors", true),
-                pingThresholds);
+                pingThresholds, titlePlaceholder, karmaPlaceholder, titleWrap);
         tabUpdater.startUpdateTask(this,
                 getConfig().getLong("tab-update-interval", 200L));
         getServer().getPluginManager().registerEvents(tabUpdater, this);
@@ -85,7 +92,7 @@ public class DomyaChat extends JavaPlugin {
         getCommand("realname").setTabCompleter(realNameCommand);
         DomyaChatCommand domyaChatCommand =
                 new DomyaChatCommand(this, messages);
-        getCommand("domyachat").setExecutor(domyaChatCommand);
+        getCommand("ethoschat").setExecutor(domyaChatCommand);
     }
 
     @Override
@@ -106,8 +113,8 @@ public class DomyaChat extends JavaPlugin {
     }
 
     private void applyPermissions() {
-        applyPermission("chatcolor-access", "domya.chat.color");
-        applyPermission("rpname-access", "domya.chat.rpname");
+        applyPermission("chatcolor-access", "ethos.chat.color");
+        applyPermission("rpname-access", "ethos.chat.rpname");
     }
 
     private void applyPermission(String configKey, String permissionName) {

@@ -10,6 +10,16 @@ chatcolor-access: op
 # Who can use /rpname and /rprace commands: "op" (operators only) or "all" (everyone)
 rpname-access: op
 
+# PlaceholderAPI placeholders for title/karma integration.
+# Change these if your titles plugin uses different placeholder names.
+placeholders:
+  title: "%ethos_title_colored%"
+  karma: "%ethos_karma%"
+  # Wrapper applied around the resolved title (MiniMessage). The <title> token
+  # is replaced with the title value. Used only when title is non-empty — for
+  # players without a title nothing is rendered. Set to "<title>" to disable brackets.
+  title-wrap: "<dark_gray>[</dark_gray><title><dark_gray>]</dark_gray>"
+
 # Show colored names and ping in the Tab menu
 tab-colors: true
 

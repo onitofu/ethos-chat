@@ -8,7 +8,7 @@ import ru.nyansus.mc.domya_chat.Messages;
 
 public class DomyaChatCommand implements CommandExecutor {
 
-    private static final String PERMISSION = "domya.chat.admin";
+    private static final String PERMISSION = "ethos.chat.admin";
 
     private final DomyaChat plugin;
     private final Messages messages;

@@ -32,6 +32,6 @@ jobs:
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: domya-chat
-          path: build/libs/domya-chat-*.jar
+          name: ethos-chat
+          path: build/libs/ethos-chat-*.jar
           if-no-files-found: error

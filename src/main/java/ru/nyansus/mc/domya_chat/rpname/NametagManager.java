@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -16,11 +17,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.event.entity.EntityMountEvent;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -77,8 +81,40 @@ public class NametagManager implements Listener {
         if (event.isSneaking()) {
             hideNametag(event.getPlayer());
         } else {
-            showNametag(event.getPlayer());
+            syncVisibility(event.getPlayer());
         }
+    }
+
+    @EventHandler
+    public void onGameModeChange(PlayerGameModeChangeEvent event) {
+        Player player = event.getPlayer();
+        if (event.getNewGameMode() == GameMode.SPECTATOR) {
+            hideNametag(player);
+        } else {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> syncVisibility(player), 1L);
+        }
+    }
+
+    @EventHandler
+    public void onPotionEffect(EntityPotionEffectEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+        PotionEffectType type = event.getModifiedType();
+        if (type == null || !type.equals(PotionEffectType.INVISIBILITY)) {
+            return;
+        }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> syncVisibility(player), 1L);
+    }
+
+    private boolean shouldHide(Player player) {
+        return player.getGameMode() == GameMode.SPECTATOR
+                || player.hasPotionEffect(PotionEffectType.INVISIBILITY)
+                || player.isSneaking();
+    }
+
+    private void syncVisibility(Player player) {
+        setNametagVisible(player, !shouldHide(player));
     }
 
     @EventHandler
@@ -203,6 +239,9 @@ public class NametagManager implements Listener {
         });
 
         displays.put(player.getUniqueId(), entityList);
+        if (shouldHide(player)) {
+            setNametagVisible(player, false);
+        }
     }
 
     private TextDisplay spawnDisplay(Player player, Component text,

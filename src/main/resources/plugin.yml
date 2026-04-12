@@ -1,4 +1,4 @@
-name: domya-chat
+name: ethos-chat
 version: '${version}'
 main: ru.nyansus.mc.domya_chat.DomyaChat
 api-version: '1.21'
@@ -9,30 +9,31 @@ commands:
   chatcolor:
     description: Set a player's chat name color
     usage: /<command> <player> <#RRGGBB|reset>
-    permission: domya.chat.color
+    permission: ethos.chat.color
   rpname:
     description: Set a player's RP display name
     usage: /<command> <player> <name|reset>
-    permission: domya.chat.rpname
+    permission: ethos.chat.rpname
   rprace:
     description: Set a player's RP race
     usage: /<command> <player> <race|reset>
-    permission: domya.chat.rpname
+    permission: ethos.chat.rpname
   realname:
     description: Look up a player's real name by their RP name
     usage: /<command> <rp-name>
-  domyachat:
+  ethoschat:
     description: Plugin admin commands
     usage: /<command> reload
-    permission: domya.chat.admin
+    permission: ethos.chat.admin
+    aliases: [domyachat]
 
 permissions:
-  domya.chat.color:
+  ethos.chat.color:
     description: Allows setting player chat colors
     default: op
-  domya.chat.rpname:
+  ethos.chat.rpname:
     description: Allows setting player RP names
     default: op
-  domya.chat.admin:
-    description: Allows using /domyachat admin commands
+  ethos.chat.admin:
+    description: Allows using /ethoschat admin commands
     default: op

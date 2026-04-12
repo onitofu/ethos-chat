@@ -26,18 +26,24 @@ public class ChatListener implements Listener {
     private final Supplier<String> formatSupplier;
     private final Supplier<LocalChatConfig> localChatConfigSupplier;
     private final Supplier<int[]> pingThresholdsSupplier;
+    private final Supplier<String> titlePlaceholderSupplier;
+    private final Supplier<String> titleWrapSupplier;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
 
     public ChatListener(PlayerColorManager colorManager, RpNameManager rpNameManager,
                         Messages messages, Supplier<String> formatSupplier,
                         Supplier<LocalChatConfig> localChatConfigSupplier,
-                        Supplier<int[]> pingThresholdsSupplier) {
+                        Supplier<int[]> pingThresholdsSupplier,
+                        Supplier<String> titlePlaceholderSupplier,
+                        Supplier<String> titleWrapSupplier) {
         this.colorManager = colorManager;
         this.rpNameManager = rpNameManager;
         this.messages = messages;
         this.formatSupplier = formatSupplier;
         this.localChatConfigSupplier = localChatConfigSupplier;
         this.pingThresholdsSupplier = pingThresholdsSupplier;
+        this.titlePlaceholderSupplier = titlePlaceholderSupplier;
+        this.titleWrapSupplier = titleWrapSupplier;
     }
 
     @EventHandler
@@ -119,8 +125,16 @@ public class ChatListener implements Listener {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             return "";
         }
-        return me.clip.placeholderapi.PlaceholderAPI
-                .setPlaceholders(player, "%domya_title_colored%");
+        String placeholder = titlePlaceholderSupplier.get();
+        if (placeholder.isEmpty()) {
+            return "";
+        }
+        String resolved = me.clip.placeholderapi.PlaceholderAPI
+                .setPlaceholders(player, placeholder);
+        if (resolved.isEmpty()) {
+            return "";
+        }
+        return titleWrapSupplier.get().replace("<title>", resolved);
     }
 
     private String pingColor(int ping) {

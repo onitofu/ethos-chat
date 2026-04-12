@@ -17,7 +17,7 @@ import ru.nyansus.mc.domya_chat.rpname.NametagManager;
 
 public class ChatColorCommand implements CommandExecutor, TabCompleter {
 
-    private static final String PERMISSION = "domya.chat.color";
+    private static final String PERMISSION = "ethos.chat.color";
 
     private final PlayerColorManager colorManager;
     private final Messages messages;
