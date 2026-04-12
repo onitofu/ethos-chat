@@ -1,5 +1,8 @@
 package ru.nyansus.mc.domya_chat.chat;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -13,74 +16,157 @@ import ru.nyansus.mc.domya_chat.color.PlayerColorManager;
 
 public class TabColorUpdater implements Listener {
 
+    private static final int COL_PADDING = 8;
+
     private final PlayerColorManager colorManager;
     private final Supplier<Boolean> enabledSupplier;
     private final Supplier<int[]> pingThresholdsSupplier;
+    private final Supplier<String> titlePlaceholderSupplier;
+    private final Supplier<String> karmaPlaceholderSupplier;
+    private final Supplier<String> titleWrapSupplier;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final boolean hasPapi;
+    private JavaPlugin plugin;
 
     public TabColorUpdater(PlayerColorManager colorManager,
                            Supplier<Boolean> enabledSupplier,
-                           Supplier<int[]> pingThresholdsSupplier) {
+                           Supplier<int[]> pingThresholdsSupplier,
+                           Supplier<String> titlePlaceholderSupplier,
+                           Supplier<String> karmaPlaceholderSupplier,
+                           Supplier<String> titleWrapSupplier) {
         this.colorManager = colorManager;
         this.enabledSupplier = enabledSupplier;
         this.pingThresholdsSupplier = pingThresholdsSupplier;
-        this.hasPapi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+        this.titlePlaceholderSupplier = titlePlaceholderSupplier;
+        this.karmaPlaceholderSupplier = karmaPlaceholderSupplier;
+        this.titleWrapSupplier = titleWrapSupplier;
+        this.hasPapi = Bukkit.getPluginManager()
+                .getPlugin("PlaceholderAPI") != null;
     }
 
-    public void startUpdateTask(JavaPlugin plugin, long intervalTicks) {
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+    public void startUpdateTask(JavaPlugin pluginInstance, long intervalTicks) {
+        this.plugin = pluginInstance;
+        Bukkit.getScheduler().runTaskTimer(pluginInstance, () -> {
             if (!enabledSupplier.get()) {
                 return;
             }
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                updateTabName(player);
-            }
+            updateAll();
         }, 100L, intervalTicks);
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        updateTabName(event.getPlayer());
+        if (plugin != null) {
+            Bukkit.getScheduler().runTaskLater(plugin,
+                    this::updateAll, 1L);
+        }
+    }
+
+    public void updateAll() {
+        var players = Bukkit.getOnlinePlayers();
+        if (players.isEmpty()) {
+            return;
+        }
+
+        Map<UUID, PlayerTabData> data = new HashMap<>();
+        int maxNameWidth = 0;
+        int maxKarmaWidth = 0;
+
+        for (Player player : players) {
+            PlayerTabData td = collectData(player);
+            data.put(player.getUniqueId(), td);
+            if (td.nameWidth > maxNameWidth) {
+                maxNameWidth = td.nameWidth;
+            }
+            if (td.karmaWidth > maxKarmaWidth) {
+                maxKarmaWidth = td.karmaWidth;
+            }
+        }
+
+        int targetNameCol = maxNameWidth + COL_PADDING;
+        int targetKarmaCol = maxKarmaWidth + COL_PADDING;
+
+        for (Player player : players) {
+            PlayerTabData td = data.get(player.getUniqueId());
+            if (td == null) {
+                continue;
+            }
+            renderTab(player, td, targetNameCol, targetKarmaCol);
+        }
     }
 
     public void updateTabName(Player player) {
+        updateAll();
+    }
+
+    private PlayerTabData collectData(Player player) {
+        String title = resolveKarmaTitle(player);
+        String karma = resolveKarma(player);
+        String titlePrefix = title.isEmpty() ? "" : title + " ";
+        String plainName = titlePrefix + player.getName();
+        int nameWidth = PixelWidth.textWidth(plainName);
+        int karmaWidth = karma.isEmpty() ? 0
+                : PixelWidth.textWidth(karma);
+        return new PlayerTabData(
+                title, karma, nameWidth, karmaWidth,
+                player.getPing());
+    }
+
+    private void renderTab(Player player, PlayerTabData td,
+                           int targetNameCol, int targetKarmaCol) {
         if (!enabledSupplier.get()) {
             player.playerListName(null);
             return;
         }
-        StringBuilder prefix = new StringBuilder();
-        String karmaTitle = resolveKarmaTitle(player);
-        if (!karmaTitle.isEmpty()) {
-            prefix.append(karmaTitle).append(" ");
+
+        String titlePrefix = td.title.isEmpty()
+                ? "" : td.title + " ";
+
+        Component result = miniMessage.deserialize(titlePrefix)
+                .append(colorManager.renderGradient(
+                        player.getName(), player))
+                .append(PixelWidth.pad(td.nameWidth, targetNameCol));
+
+        if (!td.karma.isEmpty()) {
+            result = result.append(miniMessage.deserialize(
+                    "<dark_gray>| " + karmaColor(td.karma) + td.karma))
+                    .append(PixelWidth.pad(
+                            td.karmaWidth, targetKarmaCol));
         }
-        Component result = miniMessage.deserialize(prefix.toString())
-                .append(colorManager.renderGradient(player.getName(), player));
-        StringBuilder suffix = new StringBuilder();
-        String karma = resolveKarma(player);
-        if (!karma.isEmpty()) {
-            suffix.append(" <dark_gray>| ").append(karmaColor(karma))
-                    .append(karma);
-        }
-        suffix.append(" <dark_gray>| ").append(pingColor(player.getPing()))
-                .append(player.getPing()).append("ms");
-        player.playerListName(result.append(miniMessage.deserialize(suffix.toString())));
+
+        result = result.append(miniMessage.deserialize(
+                "<dark_gray>| " + pingColor(td.ping)
+                + td.ping + "ms"));
+
+        player.playerListName(result);
     }
 
     private String resolveKarmaTitle(Player player) {
         if (!hasPapi) {
             return "";
         }
-        return me.clip.placeholderapi.PlaceholderAPI
-                .setPlaceholders(player, "%domya_title_colored%");
+        String placeholder = titlePlaceholderSupplier.get();
+        if (placeholder.isEmpty()) {
+            return "";
+        }
+        String resolved = me.clip.placeholderapi.PlaceholderAPI
+                .setPlaceholders(player, placeholder);
+        if (resolved.isEmpty()) {
+            return "";
+        }
+        return titleWrapSupplier.get().replace("<title>", resolved);
     }
 
     private String resolveKarma(Player player) {
         if (!hasPapi) {
             return "";
         }
+        String placeholder = karmaPlaceholderSupplier.get();
+        if (placeholder.isEmpty()) {
+            return "";
+        }
         return me.clip.placeholderapi.PlaceholderAPI
-                .setPlaceholders(player, "%domya_karma%");
+                .setPlaceholders(player, placeholder);
     }
 
     private String karmaColor(String karma) {
@@ -99,5 +185,10 @@ public class TabColorUpdater implements Listener {
         if (ping < thresholds[0]) return "<green>";
         if (ping < thresholds[1]) return "<yellow>";
         return "<red>";
+    }
+
+    private record PlayerTabData(String title, String karma,
+                                 int nameWidth, int karmaWidth,
+                                 int ping) {
     }
 }
