@@ -139,7 +139,11 @@ public class EthosChat extends JavaPlugin {
             return;
         }
         placeholders = new EthosChatPlaceholders(getDescription().getVersion(), rpNameManager);
-        placeholders.register();
+        if (placeholders.register()) {
+            getLogger().info("Registered PlaceholderAPI expansion: ethos_chat");
+        } else {
+            getLogger().warning("Failed to register PlaceholderAPI expansion: ethos_chat");
+        }
     }
 
     private ChatListener.LocalChatConfig loadLocalChatConfig() {

@@ -2,6 +2,7 @@ package ru.nyansus.mc.ethos_chat.integration;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
@@ -42,6 +43,19 @@ public final class EthosChatPlaceholders extends PlaceholderExpansion {
             return "";
         }
 
+        return resolve(offlinePlayer, params);
+    }
+
+    @Override
+    public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
+        if (player == null) {
+            return "";
+        }
+
+        return resolve(player, params);
+    }
+
+    private String resolve(OfflinePlayer offlinePlayer, String params) {
         if (params.equalsIgnoreCase("rpname")) {
             return rpNameManager.getRpName(offlinePlayer.getUniqueId()).orElse("");
         }
