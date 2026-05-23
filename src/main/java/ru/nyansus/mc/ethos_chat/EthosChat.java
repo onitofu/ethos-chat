@@ -17,6 +17,7 @@ import ru.nyansus.mc.ethos_chat.command.EthosChatCommand;
 import ru.nyansus.mc.ethos_chat.command.RealNameCommand;
 import ru.nyansus.mc.ethos_chat.command.RpNameCommand;
 import ru.nyansus.mc.ethos_chat.command.RpRaceCommand;
+import ru.nyansus.mc.ethos_chat.integration.EthosChatPlaceholders;
 import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameStorage;
@@ -30,6 +31,7 @@ public class EthosChat extends JavaPlugin {
     private Messages messages;
     private NametagManager nametagManager;
     private TabColorUpdater tabUpdater;
+    private EthosChatPlaceholders placeholders;
 
     @Override
     public void onEnable() {
@@ -49,6 +51,7 @@ public class EthosChat extends JavaPlugin {
         RpNameStorage rpNameStorage = new YamlRpNameStorage(
                 new File(getDataFolder(), "rpnames.yml"), getLogger());
         RpNameManager rpNameManager = new RpNameManager(rpNameStorage);
+        registerPlaceholders(rpNameManager);
         java.util.function.Supplier<int[]> pingThresholds = () -> new int[]{
                 getConfig().getInt("ping-thresholds.good", 50),
                 getConfig().getInt("ping-thresholds.bad", 150)};
@@ -97,6 +100,10 @@ public class EthosChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (placeholders != null) {
+            placeholders.unregister();
+            placeholders = null;
+        }
         if (nametagManager != null) {
             nametagManager.removeAll();
         }
@@ -125,6 +132,14 @@ public class EthosChat extends JavaPlugin {
         if (perm != null) {
             perm.setDefault(permDefault);
         }
+    }
+
+    private void registerPlaceholders(RpNameManager rpNameManager) {
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            return;
+        }
+        placeholders = new EthosChatPlaceholders(getDescription().getVersion(), rpNameManager);
+        placeholders.register();
     }
 
     private ChatListener.LocalChatConfig loadLocalChatConfig() {

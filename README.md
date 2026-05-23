@@ -1,6 +1,6 @@
-# Mob Spawn Control
+# ethos-chat
 
-Lightweight Paper plugin for managing mob spawning rules per world on a Minecraft server.
+Paper plugin for Domya SMP chat names, RP names, races, tab colors, and nametags.
 
 ## Requirements
 
@@ -10,21 +10,13 @@ Lightweight Paper plugin for managing mob spawning rules per world on a Minecraf
 ## Project Structure
 
 ```
-src/main/java/ru/nyansus/mc/mob_spawn_control/
-├── MobSpawnToggle.java          # Plugin entry point
-├── MobSpawnCommand.java         # Command dispatcher
-├── SpawnListener.java           # CreatureSpawnEvent handler
-├── SpawnRuleManager.java        # Spawn rule management
-├── MobSpawnHelpTopic.java       # Custom /help topic
+src/main/java/ru/nyansus/mc/ethos_chat/
+├── EthosChat.java               # Plugin entry point
 ├── Messages.java                # Locale-aware message loader
-├── Permissions.java             # Permission constants
 └── command/
-    ├── ICommand.java            # Subcommand interface
-    ├── ToggleCommand.java       # Base class for enable/disable
-    ├── EnableCommand.java       # /mobspawn enable <mob> <world>
-    ├── DisableCommand.java      # /mobspawn disable <mob> <world>
-    ├── ListCommand.java         # /mobspawn list <world>
-    └── ReloadCommand.java       # /mobspawn reload
+    ├── RpNameCommand.java       # /rpname
+    ├── RpRaceCommand.java       # /rprace
+    └── RealNameCommand.java     # /realname
 ```
 
 ## Building
@@ -35,22 +27,15 @@ src/main/java/ru/nyansus/mc/mob_spawn_control/
 
 The output JAR is placed in `build/libs/`.
 
-## Installation
+## PlaceholderAPI
 
-1. Build the plugin or download the JAR from Releases.
-2. Place `mob-spawn-control-<version>.jar` into the server's `plugins/` directory.
-3. Restart the server.
+When PlaceholderAPI is installed, the plugin exposes:
 
-## Configuration
-
-Settings are stored in `config.yml`:
-
-- `default-locale` — default language (`en`, `ru`)
-- `debug` — enable debug messages when spawn is blocked
-- `blocked-spawn-reasons` — spawn reasons subject to rules (`NATURAL`, `SPAWNER`, `SPAWNER_EGG`, etc.)
-- `worlds` — per-world spawn rules
-
-Multi-locale support (English, Russian) with automatic client language detection.
+- `%ethos_chat_rpname%` — RP name, empty if unset
+- `%ethos_chat_display_name%` — RP name or Minecraft name fallback
+- `%ethos_chat_race%` — RP race, empty if unset
+- `%ethos_chat_has_rpname%` — `true` or `false`
+- `%ethos_chat_has_race%` — `true` or `false`
 
 ## Testing
 
