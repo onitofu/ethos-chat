@@ -31,11 +31,11 @@ The output JAR is placed in `build/libs/`.
 
 When PlaceholderAPI is installed, the plugin exposes:
 
-- `%ethos_chat_rpname%` — RP name, empty if unset
-- `%ethos_chat_display_name%` — RP name or Minecraft name fallback
-- `%ethos_chat_race%` — RP race, empty if unset
-- `%ethos_chat_has_rpname%` — `true` or `false`
-- `%ethos_chat_has_race%` — `true` or `false`
+- `%ethoschat_rpname%` — RP name, empty if unset
+- `%ethoschat_display_name%` — RP name or Minecraft name fallback
+- `%ethoschat_race%` — RP race, empty if unset
+- `%ethoschat_has_rpname%` — `true` or `false`
+- `%ethoschat_has_race%` — `true` or `false`
 
 ## Testing
 

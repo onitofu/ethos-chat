@@ -140,9 +140,9 @@ public class EthosChat extends JavaPlugin {
         }
         placeholders = new EthosChatPlaceholders(getDescription().getVersion(), rpNameManager);
         if (placeholders.register()) {
-            getLogger().info("Registered PlaceholderAPI expansion: ethos_chat");
+            getLogger().info("Registered PlaceholderAPI expansion: ethoschat");
         } else {
-            getLogger().warning("Failed to register PlaceholderAPI expansion: ethos_chat");
+            getLogger().warning("Failed to register PlaceholderAPI expansion: ethoschat");
         }
     }
 

@@ -19,7 +19,7 @@ public final class EthosChatPlaceholders extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "ethos_chat";
+        return "ethoschat";
     }
 
     @Override
