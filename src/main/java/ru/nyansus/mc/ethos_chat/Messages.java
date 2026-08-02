@@ -1,6 +1,10 @@
 package ru.nyansus.mc.ethos_chat;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +44,22 @@ public class Messages {
         }
         for (File file : files) {
             String locale = file.getName().replace("messages_", "").replace(".yml", "");
-            locales.put(locale, YamlConfiguration.loadConfiguration(file));
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+            applyBundledDefaults(file.getName(), config);
+            locales.put(locale, config);
+        }
+    }
+
+    private void applyBundledDefaults(String resourceName, YamlConfiguration config) {
+        try (InputStream stream = plugin.getResource(resourceName)) {
+            if (stream == null) {
+                return;
+            }
+            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+            config.setDefaults(YamlConfiguration.loadConfiguration(reader));
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to load defaults for "
+                    + resourceName + ": " + e.getMessage());
         }
     }
 

@@ -18,6 +18,10 @@ commands:
     description: Set a player's RP race
     usage: /<command> <player> <race|reset>
     permission: ethos.chat.rpname
+  nametagheight:
+    description: Set a player's nametag height offset
+    usage: /<command> <player> <offset|reset>
+    permission: ethos.chat.rpname
   realname:
     description: Look up a player's real name by their RP name
     usage: /<command> <rp-name>

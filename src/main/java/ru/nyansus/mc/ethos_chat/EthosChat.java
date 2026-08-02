@@ -14,6 +14,7 @@ import ru.nyansus.mc.ethos_chat.color.PlayerColorStorage;
 import ru.nyansus.mc.ethos_chat.color.YamlPlayerColorStorage;
 import ru.nyansus.mc.ethos_chat.command.ChatColorCommand;
 import ru.nyansus.mc.ethos_chat.command.EthosChatCommand;
+import ru.nyansus.mc.ethos_chat.command.NametagHeightCommand;
 import ru.nyansus.mc.ethos_chat.command.RealNameCommand;
 import ru.nyansus.mc.ethos_chat.command.RpNameCommand;
 import ru.nyansus.mc.ethos_chat.command.RpRaceCommand;
@@ -89,6 +90,10 @@ public class EthosChat extends JavaPlugin {
                 new RpRaceCommand(rpNameManager, messages, nametagManager);
         getCommand("rprace").setExecutor(rpRaceCommand);
         getCommand("rprace").setTabCompleter(rpRaceCommand);
+        NametagHeightCommand nametagHeightCommand =
+                new NametagHeightCommand(rpNameManager, messages, nametagManager);
+        getCommand("nametagheight").setExecutor(nametagHeightCommand);
+        getCommand("nametagheight").setTabCompleter(nametagHeightCommand);
         RealNameCommand realNameCommand =
                 new RealNameCommand(rpNameManager, messages);
         getCommand("realname").setExecutor(realNameCommand);

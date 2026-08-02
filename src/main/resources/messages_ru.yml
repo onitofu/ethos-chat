@@ -20,6 +20,14 @@ rprace:
   set: "<green>Раса для <white>{player}<green> изменена на <white>{race}<green>."
   reset: "<green>Раса для <white>{player}<green> сброшена."
 
+nametagheight:
+  no-permission: "<red>У вас нет прав для использования этой команды."
+  usage: "<red>Использование: /nametagheight <игрок> <смещение|reset>"
+  player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
+  invalid: "<red>Некорректное смещение '<white>{height}<red>'. Укажите число от -10 до 10."
+  set: "<green>Смещение ника для <white>{player}<green> установлено на <white>{height}<green>."
+  reset: "<green>Смещение ника для <white>{player}<green> сброшено."
+
 realname:
   usage: "<red>Использование: /realname <рп-имя>"
   found: "<green>РП имя '<white>{name}<green>' принадлежит игроку <white>{player}<green>."

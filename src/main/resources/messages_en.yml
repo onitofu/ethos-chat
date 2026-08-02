@@ -20,6 +20,14 @@ rprace:
   set: "<green>Set race for <white>{player}<green> to <white>{race}<green>."
   reset: "<green>Reset race for <white>{player}<green>."
 
+nametagheight:
+  no-permission: "<red>You don't have permission to use this command."
+  usage: "<red>Usage: /nametagheight <player> <offset|reset>"
+  player-not-found: "<red>Player '<white>{player}<red>' is not online."
+  invalid: "<red>Invalid offset '<white>{height}<red>'. Enter a number from -10 to 10."
+  set: "<green>Set nametag offset for <white>{player}<green> to <white>{height}<green>."
+  reset: "<green>Reset nametag offset for <white>{player}<green>."
+
 realname:
   usage: "<red>Usage: /realname <rp-name>"
   found: "<green>RP name '<white>{name}<green>' belongs to <white>{player}<green>."
