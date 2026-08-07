@@ -191,7 +191,7 @@ public class TabColorUpdater implements Listener {
 
     private void updateListOrder(Player player, boolean rpActive,
                                  boolean sortRpFirst) {
-        int order = sortRpFirst && !rpActive ? 1 : 0;
+        int order = sortRpFirst && rpActive ? 1 : 0;
         if (player.getPlayerListOrder() != order) {
             player.setPlayerListOrder(order);
         }
