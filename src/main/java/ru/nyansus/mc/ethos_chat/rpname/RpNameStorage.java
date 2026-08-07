@@ -23,4 +23,8 @@ public interface RpNameStorage {
     void setNametagHeight(UUID uuid, double height);
 
     void removeNametagHeight(UUID uuid);
+
+    boolean isRpActive(UUID uuid);
+
+    void setRpActive(UUID uuid, boolean active);
 }

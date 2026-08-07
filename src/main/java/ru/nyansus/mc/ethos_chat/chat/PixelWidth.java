@@ -10,7 +10,7 @@ public final class PixelWidth {
     private static final int DEFAULT_WIDTH = 5;
     private static final int NORMAL_SPACE = 4;
     private static final int BOLD_SPACE = 5;
-    private static final int MIN_PAD = 12;
+    public static final int MIN_EXACT_PADDING = 12;
     private static final Map<Character, Integer> WIDTHS = new HashMap<>();
 
     static {
@@ -19,14 +19,14 @@ public final class PixelWidth {
         set(3, ' ', '"', '(', ')', '*', 'I', '[', ']', 't', '{', '}');
         set(4, '<', '>', 'f', 'k');
         set(5, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-               'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-               'V', 'W', 'X', 'Y', 'Z',
-               'a', 'b', 'c', 'd', 'e', 'g', 'h', 'j', 'm', 'n',
-               'o', 'p', 'q', 'r', 's', 'u', 'v', 'w', 'x', 'y',
-               'z',
-               '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-               '#', '$', '%', '&', '+', '-', '/', '=', '?', '\\',
-               '^', '_');
+                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+                'V', 'W', 'X', 'Y', 'Z',
+                'a', 'b', 'c', 'd', 'e', 'g', 'h', 'j', 'm', 'n',
+                'o', 'p', 'q', 'r', 's', 'u', 'v', 'w', 'x', 'y',
+                'z',
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                '#', '$', '%', '&', '+', '-', '/', '=', '?', '\\',
+                '^', '_');
         set(6, '@', '~');
     }
 
@@ -76,23 +76,36 @@ public final class PixelWidth {
         return width;
     }
 
-    public static Component pad(int currentWidth, int targetWidth) {
-        int diff = targetWidth - currentWidth;
-        if (diff < MIN_PAD) {
-            diff = MIN_PAD;
-        }
-        int left = diff;
-        int normalCount = 0;
-        while (left % BOLD_SPACE != 0) {
-            left -= NORMAL_SPACE;
-            normalCount++;
-        }
-        int boldCount = left / BOLD_SPACE;
-        Component result = Component.text(" ".repeat(normalCount));
-        if (boldCount > 0) {
-            result = result.append(Component.text(" ".repeat(boldCount))
+    public static Component pad(int pixelWidth) {
+        Padding padding = calculatePadding(pixelWidth);
+        Component result = Component.text(" ".repeat(padding.normalSpaces));
+        if (padding.boldSpaces > 0) {
+            result = result.append(Component.text(" ".repeat(padding.boldSpaces))
                     .decoration(TextDecoration.BOLD, true));
         }
         return result;
+    }
+
+    static Padding calculatePadding(int pixelWidth) {
+        if (pixelWidth == 0) {
+            return new Padding(0, 0);
+        }
+        if (pixelWidth < MIN_EXACT_PADDING) {
+            throw new IllegalArgumentException(
+                    "Pixel padding must be zero or at least " + MIN_EXACT_PADDING);
+        }
+        for (int normalSpaces = 0; normalSpaces < BOLD_SPACE; normalSpaces++) {
+            int remaining = pixelWidth - normalSpaces * NORMAL_SPACE;
+            if (remaining >= 0 && remaining % BOLD_SPACE == 0) {
+                return new Padding(normalSpaces, remaining / BOLD_SPACE);
+            }
+        }
+        throw new IllegalArgumentException("Cannot represent pixel padding: " + pixelWidth);
+    }
+
+    record Padding(int normalSpaces, int boldSpaces) {
+        int pixelWidth() {
+            return normalSpaces * NORMAL_SPACE + boldSpaces * BOLD_SPACE;
+        }
     }
 }

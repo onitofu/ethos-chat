@@ -12,14 +12,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import ru.nyansus.mc.ethos_chat.color.PlayerColorManager;
+import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public class TabColorUpdater implements Listener {
 
-    private static final int COL_PADDING = 8;
+    private static final String SEPARATOR = "<dark_gray>|";
 
     private final PlayerColorManager colorManager;
-    private final Supplier<Boolean> enabledSupplier;
+    private final RpNameManager rpNameManager;
+    private final Supplier<TabConfig> configSupplier;
     private final Supplier<int[]> pingThresholdsSupplier;
     private final Supplier<String> titlePlaceholderSupplier;
     private final Supplier<String> karmaPlaceholderSupplier;
@@ -27,38 +30,49 @@ public class TabColorUpdater implements Listener {
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final boolean hasPapi;
     private JavaPlugin plugin;
+    private BukkitTask updateTask;
 
     public TabColorUpdater(PlayerColorManager colorManager,
-                           Supplier<Boolean> enabledSupplier,
+                           RpNameManager rpNameManager,
+                           Supplier<TabConfig> configSupplier,
                            Supplier<int[]> pingThresholdsSupplier,
                            Supplier<String> titlePlaceholderSupplier,
                            Supplier<String> karmaPlaceholderSupplier,
                            Supplier<String> titleWrapSupplier) {
         this.colorManager = colorManager;
-        this.enabledSupplier = enabledSupplier;
+        this.rpNameManager = rpNameManager;
+        this.configSupplier = configSupplier;
         this.pingThresholdsSupplier = pingThresholdsSupplier;
         this.titlePlaceholderSupplier = titlePlaceholderSupplier;
         this.karmaPlaceholderSupplier = karmaPlaceholderSupplier;
         this.titleWrapSupplier = titleWrapSupplier;
-        this.hasPapi = Bukkit.getPluginManager()
-                .getPlugin("PlaceholderAPI") != null;
+        this.hasPapi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
     public void startUpdateTask(JavaPlugin pluginInstance, long intervalTicks) {
         this.plugin = pluginInstance;
-        Bukkit.getScheduler().runTaskTimer(pluginInstance, () -> {
-            if (!enabledSupplier.get()) {
-                return;
-            }
-            updateAll();
-        }, 100L, intervalTicks);
+        if (updateTask != null) {
+            updateTask.cancel();
+        }
+        updateTask = Bukkit.getScheduler().runTaskTimer(
+                pluginInstance, this::updateAll, 100L, Math.max(1L, intervalTicks));
+    }
+
+    public void stop() {
+        if (updateTask != null) {
+            updateTask.cancel();
+            updateTask = null;
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playerListName(null);
+            resetListOrder(player);
+        }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         if (plugin != null) {
-            Bukkit.getScheduler().runTaskLater(plugin,
-                    this::updateAll, 1L);
+            Bukkit.getScheduler().runTaskLater(plugin, this::updateAll, 1L);
         }
     }
 
@@ -67,31 +81,38 @@ public class TabColorUpdater implements Listener {
         if (players.isEmpty()) {
             return;
         }
+        TabConfig config = configSupplier.get();
+        if (!config.enabled) {
+            for (Player player : players) {
+                player.playerListName(null);
+                resetListOrder(player);
+            }
+            return;
+        }
 
         Map<UUID, PlayerTabData> data = new HashMap<>();
         int maxNameWidth = 0;
         int maxKarmaWidth = 0;
+        int maxPingWidth = 0;
+        boolean hasKarma = false;
 
         for (Player player : players) {
-            PlayerTabData td = collectData(player);
-            data.put(player.getUniqueId(), td);
-            if (td.nameWidth > maxNameWidth) {
-                maxNameWidth = td.nameWidth;
-            }
-            if (td.karmaWidth > maxKarmaWidth) {
-                maxKarmaWidth = td.karmaWidth;
-            }
+            PlayerTabData tabData = collectData(player, config);
+            data.put(player.getUniqueId(), tabData);
+            maxNameWidth = Math.max(maxNameWidth, tabData.nameWidth);
+            maxKarmaWidth = Math.max(maxKarmaWidth, tabData.karmaWidth);
+            maxPingWidth = Math.max(maxPingWidth, tabData.pingWidth);
+            hasKarma |= !tabData.karma.isEmpty();
         }
 
-        int targetNameCol = maxNameWidth + COL_PADDING;
-        int targetKarmaCol = maxKarmaWidth + COL_PADDING;
-
+        boolean showKarma = config.showKarma && hasKarma;
         for (Player player : players) {
-            PlayerTabData td = data.get(player.getUniqueId());
-            if (td == null) {
-                continue;
+            PlayerTabData tabData = data.get(player.getUniqueId());
+            if (tabData != null) {
+                updateListOrder(player, tabData.rpActive, config.sortRpFirst);
+                renderTab(player, tabData, config, showKarma,
+                        maxNameWidth, maxKarmaWidth, maxPingWidth);
             }
-            renderTab(player, td, targetNameCol, targetKarmaCol);
         }
     }
 
@@ -99,46 +120,87 @@ public class TabColorUpdater implements Listener {
         updateAll();
     }
 
-    private PlayerTabData collectData(Player player) {
-        String title = resolveKarmaTitle(player);
-        String karma = resolveKarma(player);
+    private PlayerTabData collectData(Player player, TabConfig config) {
+        String title = config.showTitle ? resolveKarmaTitle(player) : "";
+        String karma = config.showKarma ? resolveKarma(player) : "";
         String titlePrefix = title.isEmpty() ? "" : title + " ";
         String plainName = titlePrefix + player.getName();
-        int nameWidth = PixelWidth.textWidth(plainName);
-        int karmaWidth = karma.isEmpty() ? 0
-                : PixelWidth.textWidth(karma);
+        String ping = player.getPing() + "ms";
         return new PlayerTabData(
-                title, karma, nameWidth, karmaWidth,
-                player.getPing());
+                title,
+                karma,
+                PixelWidth.textWidth(plainName),
+                karma.isEmpty() ? 0 : PixelWidth.textWidth(karma),
+                ping,
+                PixelWidth.textWidth(ping),
+                rpNameManager.isRpActive(player.getUniqueId()));
     }
 
-    private void renderTab(Player player, PlayerTabData td,
-                           int targetNameCol, int targetKarmaCol) {
-        if (!enabledSupplier.get()) {
-            player.playerListName(null);
-            return;
-        }
-
-        String titlePrefix = td.title.isEmpty()
-                ? "" : td.title + " ";
-
-        Component result = miniMessage.deserialize(titlePrefix)
-                .append(colorManager.renderGradient(
-                        player.getName(), player))
-                .append(PixelWidth.pad(td.nameWidth, targetNameCol));
-
-        if (!td.karma.isEmpty()) {
+    private void renderTab(Player player, PlayerTabData data, TabConfig config,
+                           boolean showKarma, int maxNameWidth,
+                           int maxKarmaWidth, int maxPingWidth) {
+        Component result = Component.empty();
+        if (config.showRpStatus) {
+            String rpStatus = data.rpActive ? "<green>●" : "<red>●";
             result = result.append(miniMessage.deserialize(
-                    "<dark_gray>| " + karmaColor(td.karma) + td.karma))
-                    .append(PixelWidth.pad(
-                            td.karmaWidth, targetKarmaCol));
+                    " " + rpStatus + " " + SEPARATOR + " "));
         }
 
-        result = result.append(miniMessage.deserialize(
-                "<dark_gray>| " + pingColor(td.ping)
-                + td.ping + "ms"));
+        String titlePrefix = data.title.isEmpty() ? "" : data.title + " ";
+        result = result.append(miniMessage.deserialize(titlePrefix))
+                .append(colorManager.renderGradient(player.getName(), player));
+
+        if (showKarma) {
+            result = appendNameSeparator(result, data.nameWidth,
+                    maxNameWidth, config.columnGap)
+                    .append(PixelWidth.pad(config.columnGap
+                            + maxKarmaWidth - data.karmaWidth));
+            if (!data.karma.isEmpty()) {
+                result = result.append(miniMessage.deserialize(
+                        karmaColor(data.karma) + data.karma));
+            }
+            if (config.showPing) {
+                result = appendValueSeparator(result, config.columnGap)
+                        .append(PixelWidth.pad(config.columnGap
+                                + maxPingWidth - data.pingWidth))
+                        .append(miniMessage.deserialize(
+                                pingColor(player.getPing()) + data.ping));
+            }
+        } else if (config.showPing) {
+            result = appendNameSeparator(result, data.nameWidth,
+                    maxNameWidth, config.columnGap)
+                    .append(PixelWidth.pad(config.columnGap
+                            + maxPingWidth - data.pingWidth))
+                    .append(miniMessage.deserialize(
+                            pingColor(player.getPing()) + data.ping));
+        }
 
         player.playerListName(result);
+    }
+
+    private Component appendNameSeparator(Component component, int nameWidth,
+                                          int maxNameWidth, int columnGap) {
+        return component.append(PixelWidth.pad(columnGap + maxNameWidth - nameWidth))
+                .append(miniMessage.deserialize(SEPARATOR));
+    }
+
+    private Component appendValueSeparator(Component component, int columnGap) {
+        return component.append(PixelWidth.pad(columnGap))
+                .append(miniMessage.deserialize(SEPARATOR));
+    }
+
+    private void updateListOrder(Player player, boolean rpActive,
+                                 boolean sortRpFirst) {
+        int order = sortRpFirst && !rpActive ? 1 : 0;
+        if (player.getPlayerListOrder() != order) {
+            player.setPlayerListOrder(order);
+        }
+    }
+
+    private void resetListOrder(Player player) {
+        if (player.getPlayerListOrder() != 0) {
+            player.setPlayerListOrder(0);
+        }
     }
 
     private String resolveKarmaTitle(Player player) {
@@ -165,8 +227,7 @@ public class TabColorUpdater implements Listener {
         if (placeholder.isEmpty()) {
             return "";
         }
-        return me.clip.placeholderapi.PlaceholderAPI
-                .setPlaceholders(player, placeholder);
+        return me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, placeholder);
     }
 
     private String karmaColor(String karma) {
@@ -175,7 +236,7 @@ public class TabColorUpdater implements Listener {
             if (value > 0) return "<green>";
             if (value < 0) return "<red>";
         } catch (NumberFormatException ignored) {
-            // ignore
+            // Use gray for non-numeric karma values.
         }
         return "<gray>";
     }
@@ -187,8 +248,15 @@ public class TabColorUpdater implements Listener {
         return "<red>";
     }
 
+    public record TabConfig(boolean enabled, boolean showTitle,
+                            boolean showKarma, boolean showPing,
+                            boolean showRpStatus, boolean sortRpFirst,
+                            int columnGap) {
+    }
+
     private record PlayerTabData(String title, String karma,
                                  int nameWidth, int karmaWidth,
-                                 int ping) {
+                                 String ping, int pingWidth,
+                                 boolean rpActive) {
     }
 }

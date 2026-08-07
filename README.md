@@ -1,23 +1,28 @@
 # ethos-chat
 
-Paper plugin for Domya SMP chat names, RP names, races, tab colors, and nametags.
+Paper plugin for Domya SMP chat names, RP names, races, AFK status, tab columns, and nametags.
 
 ## Requirements
 
 - **Paper** 1.21+ (or compatible forks)
 - Java 21
 
-## Project Structure
+## Player Commands
 
-```
-src/main/java/ru/nyansus/mc/ethos_chat/
-├── EthosChat.java               # Plugin entry point
-├── Messages.java                # Locale-aware message loader
-└── command/
-    ├── RpNameCommand.java       # /rpname
-    ├── RpRaceCommand.java       # /rprace
-    └── RealNameCommand.java     # /realname
-```
+- `/afk` toggles AFK. Movement or looking around returns the player; five minutes of inactivity enables it.
+- `/rp` toggles the persistent RP indicator in Tab (`red circle | name` or `green circle | name`).
+- `/realname <rp-name>` resolves an online player's Minecraft name.
+
+Administrative commands `/chatcolor`, `/rpname`, `/rprace`, `/nametagheight`, and `/ethoschat reload`
+retain their existing behavior and permissions.
+
+## Tab Configuration
+
+The `tab` section controls the update interval, title, karma, ping, RP indicator, RP-first sorting, and pixel gap
+between columns.
+Titles are hidden in Tab by default but remain in chat. Existing `tab-colors` and `tab-update-interval` keys are
+accepted for backwards compatibility. `afk.auto-after-seconds` controls the idle timeout; set it to `0` to disable
+automatic AFK.
 
 ## Building
 

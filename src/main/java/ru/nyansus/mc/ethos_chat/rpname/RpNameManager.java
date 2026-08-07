@@ -68,6 +68,14 @@ public class RpNameManager {
         storage.removeNametagHeight(uuid);
     }
 
+    public boolean isRpActive(UUID uuid) {
+        return storage.isRpActive(uuid);
+    }
+
+    public void setRpActive(UUID uuid, boolean active) {
+        storage.setRpActive(uuid, active);
+    }
+
     public boolean hasNametag(Player player) {
         return storage.getRpName(player.getUniqueId()).isPresent()
                 || storage.getRace(player.getUniqueId()).isPresent();

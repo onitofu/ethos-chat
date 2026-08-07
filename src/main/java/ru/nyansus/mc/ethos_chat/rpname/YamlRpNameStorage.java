@@ -76,6 +76,18 @@ public class YamlRpNameStorage implements RpNameStorage {
         save();
     }
 
+    @Override
+    public synchronized boolean isRpActive(UUID uuid) {
+        return config.getBoolean(uuid + ".rp-active", false);
+    }
+
+    @Override
+    public synchronized void setRpActive(UUID uuid, boolean active) {
+        config.set(uuid + ".rp-active", active ? true : null);
+        cleanupEntry(uuid);
+        save();
+    }
+
     private void cleanupEntry(UUID uuid) {
         var section = config.getConfigurationSection(uuid.toString());
         if (section != null && section.getKeys(false).isEmpty()) {

@@ -1,5 +1,6 @@
 command:
   no-permission: "<red>У вас нет прав для использования этой команды."
+  player-only: "<gray>Эту команду может использовать только игрок."
   usage: "<red>Использование: /chatcolor <игрок> <цвет|#RRGGBB|reset>"
   player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
   color-reset: "<green>Цвет чата для <white>{player}<green> сброшен."
@@ -41,6 +42,14 @@ admin:
 chat:
   local-prefix: "Л"
   global-prefix: "Г"
+
+afk:
+  away: "<gray>{player} отошёл."
+  back: "<gray>{player} вернулся."
+
+rp:
+  active: "<gray>РП-режим включён."
+  inactive: "<gray>РП-режим выключен."
 
 hover:
   nickname: "Ник"
