@@ -20,12 +20,25 @@ placeholders:
   # players without a title nothing is rendered. Set to "<title>" to disable brackets.
   title-wrap: "<dark_gray>[</dark_gray><title><dark_gray>]</dark_gray>"
 
-# Show colored names and ping in the Tab menu
-tab-colors: true
+# Tab list layout. Legacy tab-colors and tab-update-interval keys are still
+# accepted when upgrading an existing installation.
+tab:
+  enabled: true
+  # Update interval in ticks (20 ticks = 1 second).
+  update-interval: 200
+  # Titles remain available in chat even when hidden here.
+  show-title: false
+  show-karma: true
+  show-ping: true
+  show-rp-status: true
+  # Keep players with active RP status above inactive players.
+  sort-rp-first: true
+  # Pixel gap between columns. Values below 12 are clamped to 12.
+  column-gap: 12
 
-# Tab list update interval in ticks (20 ticks = 1 second).
-# Controls how often ping values refresh. Default: 200 (10 seconds).
-tab-update-interval: 200
+# AFK settings. Set to 0 to disable automatic AFK while keeping /afk enabled.
+afk:
+  auto-after-seconds: 300
 
 # Hue shift (in degrees, 0-360) for the gradient second color.
 # Set to 0 to disable gradient (single solid color).

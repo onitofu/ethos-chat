@@ -3,6 +3,7 @@ package ru.nyansus.mc.ethos_chat.rpname;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.UUID;
 import java.util.logging.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -51,6 +52,38 @@ public class YamlRpNameStorage implements RpNameStorage {
     @Override
     public synchronized void removeRace(UUID uuid) {
         config.set(uuid + ".race", null);
+        cleanupEntry(uuid);
+        save();
+    }
+
+    @Override
+    public synchronized OptionalDouble getNametagHeight(UUID uuid) {
+        String path = uuid + ".nametag-height";
+        return config.contains(path)
+                ? OptionalDouble.of(config.getDouble(path)) : OptionalDouble.empty();
+    }
+
+    @Override
+    public synchronized void setNametagHeight(UUID uuid, double height) {
+        config.set(uuid + ".nametag-height", height);
+        save();
+    }
+
+    @Override
+    public synchronized void removeNametagHeight(UUID uuid) {
+        config.set(uuid + ".nametag-height", null);
+        cleanupEntry(uuid);
+        save();
+    }
+
+    @Override
+    public synchronized boolean isRpActive(UUID uuid) {
+        return config.getBoolean(uuid + ".rp-active", false);
+    }
+
+    @Override
+    public synchronized void setRpActive(UUID uuid, boolean active) {
+        config.set(uuid + ".rp-active", active ? true : null);
         cleanupEntry(uuid);
         save();
     }

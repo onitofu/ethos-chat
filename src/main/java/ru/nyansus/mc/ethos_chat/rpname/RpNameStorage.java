@@ -1,6 +1,7 @@
 package ru.nyansus.mc.ethos_chat.rpname;
 
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.UUID;
 
 public interface RpNameStorage {
@@ -16,4 +17,14 @@ public interface RpNameStorage {
     void setRace(UUID uuid, String race);
 
     void removeRace(UUID uuid);
+
+    OptionalDouble getNametagHeight(UUID uuid);
+
+    void setNametagHeight(UUID uuid, double height);
+
+    void removeNametagHeight(UUID uuid);
+
+    boolean isRpActive(UUID uuid);
+
+    void setRpActive(UUID uuid, boolean active);
 }

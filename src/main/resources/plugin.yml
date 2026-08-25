@@ -18,9 +18,21 @@ commands:
     description: Set a player's RP race
     usage: /<command> <player> <race|reset>
     permission: ethos.chat.rpname
+  nametagheight:
+    description: Set a player's nametag height offset
+    usage: /<command> <player> <offset|reset>
+    permission: ethos.chat.rpname
   realname:
     description: Look up a player's real name by their RP name
     usage: /<command> <rp-name>
+  afk:
+    description: Toggle your AFK status
+    usage: /<command>
+    permission: ethos.chat.afk
+  rp:
+    description: Toggle your active RP status
+    usage: /<command>
+    permission: ethos.chat.rp
   ethoschat:
     description: Plugin admin commands
     usage: /<command> reload
@@ -37,3 +49,9 @@ permissions:
   ethos.chat.admin:
     description: Allows using /ethoschat admin commands
     default: op
+  ethos.chat.afk:
+    description: Allows toggling personal AFK status
+    default: true
+  ethos.chat.rp:
+    description: Allows toggling personal RP status
+    default: true

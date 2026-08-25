@@ -79,10 +79,11 @@ public class NametagManager implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent event) {
+        Player player = event.getPlayer();
         if (event.isSneaking()) {
-            hideNametag(event.getPlayer());
+            hideNametag(player);
         } else {
-            syncVisibility(event.getPlayer());
+            Bukkit.getScheduler().runTaskLater(plugin, () -> syncVisibility(player), 1L);
         }
     }
 
@@ -218,13 +219,14 @@ public class NametagManager implements Listener {
 
     private void createNametag(Player player) {
         NametagConfig cfg = configSupplier.get();
+        float height = (float) rpNameManager.getNametagHeight(player);
         List<TextDisplay> entityList = new ArrayList<>();
 
         Component nameComponent = colorManager.renderGradient(
                 rpNameManager.getDisplayName(player), player);
 
         TextDisplay nameDisplay = spawnDisplay(player, nameComponent,
-                new Vector3f(0, cfg.nameOffset(), 0), new Vector3f(1, 1, 1));
+                new Vector3f(0, cfg.nameOffset() + height, 0), new Vector3f(1, 1, 1));
         player.addPassenger(nameDisplay);
         entityList.add(nameDisplay);
 
@@ -234,7 +236,7 @@ public class NametagManager implements Listener {
             float s = cfg.raceScale();
 
             TextDisplay raceDisplay = spawnDisplay(player, raceComponent,
-                    new Vector3f(0, cfg.raceOffset(), 0), new Vector3f(s, s, s));
+                    new Vector3f(0, cfg.raceOffset() + height, 0), new Vector3f(s, s, s));
             player.addPassenger(raceDisplay);
             entityList.add(raceDisplay);
         });
