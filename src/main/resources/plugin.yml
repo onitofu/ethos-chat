@@ -2,6 +2,7 @@ name: ethos-chat
 version: '${version}'
 main: ru.nyansus.mc.ethos_chat.EthosChat
 api-version: '1.21'
+author: Nyansus
 softdepend:
   - PlaceholderAPI
 

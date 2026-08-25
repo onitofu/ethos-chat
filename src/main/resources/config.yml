@@ -1,6 +1,6 @@
 # Chat format. Placeholders: <player>, <message>, <title>
 # Gradient and hover are applied automatically to <player>.
-# <title> is resolved from domya-fate via PlaceholderAPI (empty if no title or plugin missing).
+# <title> is resolved from Ethos via PlaceholderAPI (empty if no title or plugin missing).
 # Uses MiniMessage syntax: https://docs.advntr.dev/minimessage/format.html
 format: "<dark_gray>▶ <title><player> <dark_gray>» <gray><message>"
 

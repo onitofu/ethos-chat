@@ -1,29 +1,17 @@
 # Changelog
 
-## 1.1.0
+## 1.0.0
 
-### New
+First public release.
 
-- `/afk` with automatic idle detection and server-wide away/return announcements
-- Persistent `/rp` status with a red or green indicator in Tab
-- RP-first player sorting in Tab
-- Configurable Tab columns and AFK timeout
+### Added
 
-### Fixed
-
-- Pixel-accurate Tab alignment for names with nearly identical widths
-- Titles can be hidden from Tab without removing them from chat
-
-## 1.0
-
-### New
-
-- Command `/mobspawn enable <mob> <world>` — allow a mob type to spawn
-- Command `/mobspawn disable <mob> <world>` — prevent a mob type from spawning
-- Command `/mobspawn list <world>` — show spawn rules for a world
-- Command `/mobspawn reload` — reload configuration
-- Configurable blocked spawn reasons (`NATURAL`, `SPAWNER`, `SPAWNER_EGG`, etc.)
-- Per-world spawn rules saved to `config.yml`
-- Multi-locale support (English, Russian)
-- Debug mode for logging blocked spawns
-- Permissions: `mobspawn.admin`, `mobspawn.enable`, `mobspawn.disable`, `mobspawn.list`, `mobspawn.reload`
+- MiniMessage chat formatting with configurable player colors and gradients
+- Persistent RP names, races, activity state, and nametag height offsets
+- Local and global chat modes with configurable radius and prefix
+- Manual `/afk` state and automatic idle detection
+- Configurable tab-list columns for titles, karma, ping, and RP state
+- RP-first tab-list sorting and pixel-aware column alignment
+- Floating RP name and race displays above players
+- English and Russian localization
+- Optional PlaceholderAPI integration and RP identity placeholders

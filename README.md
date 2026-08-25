@@ -1,78 +1,79 @@
-# ethos-chat
+# Ethos Chat
 
-Paper plugin for Domya SMP chat names, RP names, races, AFK status, tab columns, and nametags.
+Ethos Chat is a Paper plugin for formatted chat, role-play identities, AFK state, tab-list layout, and floating
+nametags on the Ethos server.
+
+## Features
+
+- MiniMessage chat formatting with deterministic player colors and optional gradients
+- Per-player RP names, races, and nametag height offsets
+- Local chat with a configurable radius and a prefix for global messages
+- Manual and automatic AFK state with server-wide away and return announcements
+- Persistent RP activity status and RP-first tab-list sorting
+- Configurable tab columns for titles, karma, ping, and RP state
+- English and Russian messages
+- Optional PlaceholderAPI integration with Ethos and other plugins
 
 ## Requirements
 
-- **Paper** 1.21+ (or compatible forks)
 - Java 21
+- Paper 1.21.11
+- PlaceholderAPI 2.11.6 or newer (optional)
 
-## Player Commands
+## Installation
 
-- `/afk` toggles AFK. Movement or looking around returns the player; five minutes of inactivity enables it.
-- `/rp` toggles the persistent RP indicator in Tab (`red circle | name` or `green circle | name`).
-- `/realname <rp-name>` resolves an online player's Minecraft name.
+1. Download `ethos-chat-1.0.0.jar`.
+2. Place it in the server's `plugins/` directory.
+3. Restart the server.
+4. Edit `plugins/ethos-chat/config.yml` and run `/ethoschat reload`.
 
-Administrative commands `/chatcolor`, `/rpname`, `/rprace`, `/nametagheight`, and `/ethoschat reload`
-retain their existing behavior and permissions.
+PlaceholderAPI is optional. Without it, configured title and karma placeholders resolve to empty values.
 
-## Tab Configuration
+## Commands
 
-The `tab` section controls the update interval, title, karma, ping, RP indicator, RP-first sorting, and pixel gap
-between columns.
-Titles are hidden in Tab by default but remain in chat. Existing `tab-colors` and `tab-update-interval` keys are
-accepted for backwards compatibility. `afk.auto-after-seconds` controls the idle timeout; set it to `0` to disable
-automatic AFK.
+| Command | Permission | Description |
+| --- | --- | --- |
+| `/afk` | `ethos.chat.afk` | Toggle your AFK state |
+| `/rp` | `ethos.chat.rp` | Toggle your persistent RP activity state |
+| `/realname <rp-name>` | None | Find an online player's Minecraft name from their RP name |
+| `/chatcolor <player> <color\|reset>` | `ethos.chat.color` | Set a player's chat color |
+| `/rpname <player> <name\|reset>` | `ethos.chat.rpname` | Set a player's RP name |
+| `/rprace <player> <race\|reset>` | `ethos.chat.rpname` | Set a player's RP race |
+| `/nametagheight <player> <offset\|reset>` | `ethos.chat.rpname` | Set a player's nametag height offset |
+| `/ethoschat reload` | `ethos.chat.admin` | Reload the plugin configuration |
 
-## Building
-
-```bash
-./gradlew build
-```
-
-The output JAR is placed in `build/libs/`.
+Operators receive the administrative permissions by default. Access to chat colors and RP identity commands can also
+be opened to all players through `chatcolor-access` and `rpname-access` in `config.yml`.
 
 ## PlaceholderAPI
 
-When PlaceholderAPI is installed, the plugin exposes:
+Ethos Chat consumes the configurable title and karma placeholders in `config.yml`. It also provides:
 
-- `%ethoschat_rpname%` — RP name, empty if unset
-- `%ethoschat_display_name%` — RP name or Minecraft name fallback
-- `%ethoschat_race%` — RP race, empty if unset
-- `%ethoschat_has_rpname%` — `true` or `false`
-- `%ethoschat_has_race%` — `true` or `false`
+- `%ethoschat_rpname%`
+- `%ethoschat_display_name%`
+- `%ethoschat_race%`
+- `%ethoschat_has_rpname%`
+- `%ethoschat_has_race%`
 
-## Testing
+## Configuration and data
 
-Tests use **JUnit 4** and [MockBukkit](https://github.com/MockBukkit/MockBukkit).
+- `config.yml` controls chat formatting, local chat, colors, ping thresholds, tab layout, AFK timeout, and nametags.
+- `players.yml` stores explicit player colors.
+- `rpnames.yml` stores RP names, races, activity state, and nametag offsets by player UUID.
+- `messages_en.yml` and `messages_ru.yml` contain localized messages.
 
-```bash
-./gradlew test
-```
+Legacy `tab-colors` and `tab-update-interval` settings remain supported when upgrading an existing installation.
 
-Coverage reports (JaCoCo) are generated automatically after tests:
-
-```bash
-./gradlew jacocoTestReport
-# HTML report: build/reports/jacoco/test/html/index.html
-```
-
-## Code Style
-
-The project uses [Checkstyle](https://checkstyle.org/) with a configuration based on Google Java Style (4-space indent, 120-char line length).
+## Building and testing
 
 ```bash
-./gradlew checkstyleMain checkstyleTest
+./gradlew check
+./gradlew build
 ```
 
-## CI
-
-GitHub Actions workflow (`.github/workflows/build.yml`) runs on pushes and PRs to `main`/`master`:
-
-1. Checkstyle
-2. Build + tests
-3. JAR artifact upload
+The release JAR is written to `build/libs/ethos-chat-1.0.0.jar`. Tests use JUnit 4 and MockBukkit; JaCoCo reports are
+generated in `build/reports/jacoco/test/html/`.
 
 ## License
 
-MIT
+Copyright (c) 2026 Nyansus. Released under the [MIT License](LICENSE).
