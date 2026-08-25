@@ -1,14 +1,15 @@
 package ru.nyansus.mc.ethos_chat.command;
 
+import java.util.function.Consumer;
 import org.bukkit.entity.Player;
 import ru.nyansus.mc.ethos_chat.Messages;
-import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public class RpNameCommand extends BaseRpCommand {
 
-    public RpNameCommand(RpNameManager rpNameManager, Messages messages, NametagManager nametagManager) {
-        super(rpNameManager, messages, nametagManager, "rpname");
+    public RpNameCommand(RpNameManager rpNameManager, Messages messages,
+                         Consumer<Player> nametagRefresh) {
+        super(rpNameManager, messages, nametagRefresh, "rpname");
     }
 
     @Override

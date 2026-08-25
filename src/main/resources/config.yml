@@ -1,3 +1,14 @@
+# Feature ownership. "auto" enables the internal renderer only when no known
+# external owner is installed. Use "internal" to force it or "external" to
+# keep this plugin focused on RP identity, nametags, and placeholders.
+ownership:
+  chat: auto
+  tab-list: auto
+  nametags: auto
+
+# Fallback for the console and players whose client locale is unavailable.
+default-locale: en
+
 # Chat format. Placeholders: <player>, <message>, <title>
 # Gradient and hover are applied automatically to <player>.
 # <title> is resolved from Ethos via PlaceholderAPI (empty if no title or plugin missing).
@@ -20,8 +31,7 @@ placeholders:
   # players without a title nothing is rendered. Set to "<title>" to disable brackets.
   title-wrap: "<dark_gray>[</dark_gray><title><dark_gray>]</dark_gray>"
 
-# Tab list layout. Legacy tab-colors and tab-update-interval keys are still
-# accepted when upgrading an existing installation.
+# Tab list layout.
 tab:
   enabled: true
   # Update interval in ticks (20 ticks = 1 second).
@@ -35,10 +45,6 @@ tab:
   sort-rp-first: true
   # Pixel gap between columns. Values below 12 are clamped to 12.
   column-gap: 12
-
-# AFK settings. Set to 0 to disable automatic AFK while keeping /afk enabled.
-afk:
-  auto-after-seconds: 300
 
 # Hue shift (in degrees, 0-360) for the gradient second color.
 # Set to 0 to disable gradient (single solid color).

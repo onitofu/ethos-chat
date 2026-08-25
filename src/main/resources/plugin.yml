@@ -5,6 +5,11 @@ api-version: '1.21'
 author: Nyansus
 softdepend:
   - PlaceholderAPI
+  - Essentials
+  - EssentialsChat
+  - TAB
+  - CarbonChat
+  - ChatControlRed
 
 commands:
   chatcolor:
@@ -26,10 +31,6 @@ commands:
   realname:
     description: Look up a player's real name by their RP name
     usage: /<command> <rp-name>
-  afk:
-    description: Toggle your AFK status
-    usage: /<command>
-    permission: ethos.chat.afk
   rp:
     description: Toggle your active RP status
     usage: /<command>
@@ -50,9 +51,6 @@ permissions:
   ethos.chat.admin:
     description: Allows using /ethoschat admin commands
     default: op
-  ethos.chat.afk:
-    description: Allows toggling personal AFK status
-    default: true
   ethos.chat.rp:
     description: Allows toggling personal RP status
     default: true

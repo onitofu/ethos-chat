@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
@@ -22,6 +23,7 @@ public class Messages {
     private final JavaPlugin plugin;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final Map<String, YamlConfiguration> locales = new HashMap<>();
+    private String defaultLocale = DEFAULT_LOCALE;
 
     public Messages(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -35,18 +37,27 @@ public class Messages {
     private void load() {
         locales.clear();
         for (String locale : BUNDLED_LOCALES) {
-            plugin.saveResource("messages_" + locale + ".yml", false);
+            File localeFile = new File(plugin.getDataFolder(), "lang/" + locale + ".yml");
+            if (!localeFile.exists()) {
+                plugin.saveResource("lang/" + locale + ".yml", false);
+            }
         }
-        File[] files = plugin.getDataFolder().listFiles(
-                (dir, name) -> name.matches("messages_[a-z]+\\.yml"));
+        File languageDirectory = new File(plugin.getDataFolder(), "lang");
+        File[] files = languageDirectory.listFiles(
+                (dir, name) -> name.matches("[a-z]+\\.yml"));
         if (files == null) {
             return;
         }
         for (File file : files) {
-            String locale = file.getName().replace("messages_", "").replace(".yml", "");
+            String locale = file.getName().replace(".yml", "");
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-            applyBundledDefaults(file.getName(), config);
+            applyBundledDefaults("lang/" + file.getName(), config);
             locales.put(locale, config);
+        }
+        defaultLocale = plugin.getConfig().getString("default-locale", DEFAULT_LOCALE)
+                .toLowerCase(Locale.ROOT);
+        if (!locales.containsKey(defaultLocale)) {
+            defaultLocale = DEFAULT_LOCALE;
         }
     }
 
@@ -64,13 +75,13 @@ public class Messages {
     }
 
     public String get(String key, String locale) {
-        YamlConfiguration config = locales.getOrDefault(locale, locales.get(DEFAULT_LOCALE));
+        YamlConfiguration config = locales.getOrDefault(locale, locales.get(defaultLocale));
         if (config == null) {
             return "?" + key;
         }
         String value = config.getString(key);
         if (value == null) {
-            YamlConfiguration fallback = locales.get(DEFAULT_LOCALE);
+            YamlConfiguration fallback = locales.get(defaultLocale);
             value = fallback != null ? fallback.getString(key) : null;
         }
         return value != null ? value : "?" + key;
@@ -78,13 +89,13 @@ public class Messages {
 
     public String getWorld(String worldName, String locale) {
         String key = "hover.worlds." + worldName;
-        YamlConfiguration config = locales.getOrDefault(locale, locales.get(DEFAULT_LOCALE));
+        YamlConfiguration config = locales.getOrDefault(locale, locales.get(defaultLocale));
         if (config != null) {
             String value = config.getString(key);
             if (value != null) {
                 return value;
             }
-            YamlConfiguration fallback = locales.get(DEFAULT_LOCALE);
+            YamlConfiguration fallback = locales.get(defaultLocale);
             if (fallback != null) {
                 value = fallback.getString(key);
                 if (value != null) {
@@ -97,7 +108,7 @@ public class Messages {
 
     public void send(CommandSender sender, String key, String... pairs) {
         String locale = sender instanceof Player player
-                ? player.locale().getLanguage() : DEFAULT_LOCALE;
+                ? player.locale().getLanguage() : defaultLocale;
         String msg = get(key, locale);
         for (int i = 0; i + 1 < pairs.length; i += 2) {
             msg = msg.replace(pairs[i], miniMessage.escapeTags(pairs[i + 1]));

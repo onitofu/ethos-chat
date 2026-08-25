@@ -1,24 +1,25 @@
 # Ethos Chat
 
-Ethos Chat is a Paper plugin for formatted chat, role-play identities, AFK state, tab-list layout, and floating
-nametags on the Ethos server.
+Ethos Chat is the focused runtime for Ethos role-play identities and floating nametags. Its optional
+chat and tab-list renderers automatically stay disabled when a specialized owner such as EssentialsXChat, CarbonChat,
+or TAB is present.
 
 ## Features
 
-- MiniMessage chat formatting with deterministic player colors and optional gradients
 - Per-player RP names, races, and nametag height offsets
-- Local chat with a configurable radius and a prefix for global messages
-- Manual and automatic AFK state with server-wide away and return announcements
-- Persistent RP activity status and RP-first tab-list sorting
-- Configurable tab columns for titles, karma, ping, and RP state
+- Persistent RP activity status
+- Floating two-line TextDisplay nametags with configurable height
+- PlaceholderAPI values for chat, tab-list, scoreboards, and other plugins
+- Optional MiniMessage chat renderer with local/global channels when no external chat owner is installed
+- Optional tab-list renderer when TAB is not installed
 - English and Russian messages
-- Optional PlaceholderAPI integration with Ethos and other plugins
 
 ## Requirements
 
 - Java 21
 - Paper 1.21.11
 - PlaceholderAPI 2.11.6 or newer (optional)
+- EssentialsX/EssentialsXChat, CarbonChat, and TAB are detected automatically when installed
 
 ## Installation
 
@@ -27,13 +28,13 @@ nametags on the Ethos server.
 3. Restart the server.
 4. Edit `plugins/ethos-chat/config.yml` and run `/ethoschat reload`.
 
-PlaceholderAPI is optional. Without it, configured title and karma placeholders resolve to empty values.
+PlaceholderAPI is optional. Without it, configured title and karma placeholders resolve to empty values. AFK is
+intentionally not implemented here; EssentialsX or another presence plugin must own AFK state.
 
 ## Commands
 
 | Command | Permission | Description |
 | --- | --- | --- |
-| `/afk` | `ethos.chat.afk` | Toggle your AFK state |
 | `/rp` | `ethos.chat.rp` | Toggle your persistent RP activity state |
 | `/realname <rp-name>` | None | Find an online player's Minecraft name from their RP name |
 | `/chatcolor <player> <color\|reset>` | `ethos.chat.color` | Set a player's chat color |
@@ -57,12 +58,15 @@ Ethos Chat consumes the configurable title and karma placeholders in `config.yml
 
 ## Configuration and data
 
-- `config.yml` controls chat formatting, local chat, colors, ping thresholds, tab layout, AFK timeout, and nametags.
+- `config.yml` controls feature ownership, optional chat formatting, colors, ping thresholds, tab layout, and nametags.
 - `players.yml` stores explicit player colors.
 - `rpnames.yml` stores RP names, races, activity state, and nametag offsets by player UUID.
-- `messages_en.yml` and `messages_ru.yml` contain localized messages.
+- `lang/en.yml` and `lang/ru.yml` contain editable MiniMessage localizations.
 
-Legacy `tab-colors` and `tab-update-interval` settings remain supported when upgrading an existing installation.
+`ownership.chat`, `ownership.tab-list`, and `ownership.nametags` accept `auto`, `internal`, or `external`. In `auto`
+mode the internal chat renderer is disabled when EssentialsXChat, CarbonChat, or ChatControlRed is active; TAB owns
+both the player list and nametags when installed. RP identity remains available through PlaceholderAPI for those
+external renderers. Ownership changes require a server restart; ordinary formatting changes support reload.
 
 ## Building and testing
 

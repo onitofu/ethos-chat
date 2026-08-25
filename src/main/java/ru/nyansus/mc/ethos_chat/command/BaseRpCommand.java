@@ -1,6 +1,7 @@
 package ru.nyansus.mc.ethos_chat.command;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -9,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.nyansus.mc.ethos_chat.Messages;
-import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public abstract class BaseRpCommand implements CommandExecutor, TabCompleter {
@@ -18,14 +18,14 @@ public abstract class BaseRpCommand implements CommandExecutor, TabCompleter {
 
     protected final RpNameManager rpNameManager;
     protected final Messages messages;
-    protected final NametagManager nametagManager;
+    protected final Consumer<Player> nametagRefresh;
     private final String messagePrefix;
 
     protected BaseRpCommand(RpNameManager rpNameManager, Messages messages,
-                            NametagManager nametagManager, String messagePrefix) {
+                            Consumer<Player> nametagRefresh, String messagePrefix) {
         this.rpNameManager = rpNameManager;
         this.messages = messages;
-        this.nametagManager = nametagManager;
+        this.nametagRefresh = nametagRefresh;
         this.messagePrefix = messagePrefix;
     }
 
@@ -46,13 +46,13 @@ public abstract class BaseRpCommand implements CommandExecutor, TabCompleter {
         }
         if (args[1].equalsIgnoreCase("reset")) {
             handleReset(target);
-            nametagManager.refreshNametag(target);
+            nametagRefresh.accept(target);
             messages.send(sender, messagePrefix + ".reset", "{player}", target.getName());
             return true;
         }
         String value = joinArgs(args);
         handleSet(target, value);
-        nametagManager.refreshNametag(target);
+        nametagRefresh.accept(target);
         messages.send(sender, messagePrefix + ".set",
                 "{player}", target.getName(), valueKey(), value);
         return true;

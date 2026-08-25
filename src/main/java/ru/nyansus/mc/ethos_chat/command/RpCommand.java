@@ -5,19 +5,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ru.nyansus.mc.ethos_chat.Messages;
-import ru.nyansus.mc.ethos_chat.chat.TabColorUpdater;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public class RpCommand implements CommandExecutor {
 
     private final RpNameManager rpNameManager;
-    private final TabColorUpdater tabUpdater;
+    private final Runnable tabRefresh;
     private final Messages messages;
 
-    public RpCommand(RpNameManager rpNameManager, TabColorUpdater tabUpdater,
+    public RpCommand(RpNameManager rpNameManager, Runnable tabRefresh,
                      Messages messages) {
         this.rpNameManager = rpNameManager;
-        this.tabUpdater = tabUpdater;
+        this.tabRefresh = tabRefresh;
         this.messages = messages;
     }
 
@@ -29,7 +28,7 @@ public class RpCommand implements CommandExecutor {
         }
         boolean active = !rpNameManager.isRpActive(player.getUniqueId());
         rpNameManager.setRpActive(player.getUniqueId(), active);
-        tabUpdater.updateAll();
+        tabRefresh.run();
         messages.send(player, active ? "rp.active" : "rp.inactive");
         return true;
     }

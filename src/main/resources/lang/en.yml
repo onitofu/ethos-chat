@@ -1,7 +1,7 @@
 command:
-  no-permission: "<red>You don't have permission to use this command."
-  player-only: "<gray>Only a player can use this command."
-  usage: "<red>Usage: /chatcolor <player> <color|#RRGGBB|reset>"
+  no-permission: "<red>You do not have permission to use this command."
+  player-only: "<red>Only a player can use this command."
+  usage: "<yellow>Usage: <white>/chatcolor <player> <color|#RRGGBB|reset>"
   player-not-found: "<red>Player '<white>{player}<red>' is not online."
   color-reset: "<green>Reset chat color for <white>{player}<green>."
   color-set: "<green>Set chat color for <white>{player}<green> to <white>{color}<green>."
@@ -9,47 +9,43 @@ command:
 
 rpname:
   no-permission: "<red>You don't have permission to use this command."
-  usage: "<red>Usage: /rpname <player> <name|reset>"
+  usage: "<yellow>Usage: <white>/rpname <player> <name|reset>"
   player-not-found: "<red>Player '<white>{player}<red>' is not online."
   set: "<green>Set RP name for <white>{player}<green> to <white>{name}<green>."
   reset: "<green>Reset RP name for <white>{player}<green>."
 
 rprace:
   no-permission: "<red>You don't have permission to use this command."
-  usage: "<red>Usage: /rprace <player> <race|reset>"
+  usage: "<yellow>Usage: <white>/rprace <player> <race|reset>"
   player-not-found: "<red>Player '<white>{player}<red>' is not online."
   set: "<green>Set race for <white>{player}<green> to <white>{race}<green>."
   reset: "<green>Reset race for <white>{player}<green>."
 
 nametagheight:
   no-permission: "<red>You don't have permission to use this command."
-  usage: "<red>Usage: /nametagheight <player> <offset|reset>"
+  usage: "<yellow>Usage: <white>/nametagheight <player> <offset|reset>"
   player-not-found: "<red>Player '<white>{player}<red>' is not online."
   invalid: "<red>Invalid offset '<white>{height}<red>'. Enter a number from -10 to 10."
   set: "<green>Set nametag offset for <white>{player}<green> to <white>{height}<green>."
   reset: "<green>Reset nametag offset for <white>{player}<green>."
 
 realname:
-  usage: "<red>Usage: /realname <rp-name>"
+  usage: "<yellow>Usage: <white>/realname <rp-name>"
   found: "<green>RP name '<white>{name}<green>' belongs to <white>{player}<green>."
   not-found: "<red>No online player with RP name '<white>{name}<red>' found."
 
 admin:
   no-permission: "<red>You don't have permission to use this command."
-  usage: "<red>Usage: /domyachat reload"
+  usage: "<yellow>Usage: <white>/ethoschat reload"
   reloaded: "<green>Configuration reloaded."
 
 chat:
   local-prefix: "L"
   global-prefix: "G"
 
-afk:
-  away: "<gray>{player} is now AFK."
-  back: "<gray>{player} is no longer AFK."
-
 rp:
-  active: "<gray>RP mode enabled."
-  inactive: "<gray>RP mode disabled."
+  active: "<green>RP mode enabled."
+  inactive: "<yellow>RP mode disabled."
 
 hover:
   nickname: "Nickname"

@@ -1,18 +1,18 @@
 package ru.nyansus.mc.ethos_chat;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.nyansus.mc.ethos_chat.afk.AfkManager;
 import ru.nyansus.mc.ethos_chat.chat.ChatListener;
 import ru.nyansus.mc.ethos_chat.chat.PixelWidth;
 import ru.nyansus.mc.ethos_chat.chat.TabColorUpdater;
 import ru.nyansus.mc.ethos_chat.color.PlayerColorManager;
 import ru.nyansus.mc.ethos_chat.color.PlayerColorStorage;
 import ru.nyansus.mc.ethos_chat.color.YamlPlayerColorStorage;
-import ru.nyansus.mc.ethos_chat.command.AfkCommand;
 import ru.nyansus.mc.ethos_chat.command.ChatColorCommand;
 import ru.nyansus.mc.ethos_chat.command.EthosChatCommand;
 import ru.nyansus.mc.ethos_chat.command.NametagHeightCommand;
@@ -32,10 +32,10 @@ public class EthosChat extends JavaPlugin {
             "<dark_gray>▶ <title><player> <dark_gray>» <gray><message>";
 
     private Messages messages;
-    private AfkManager afkManager;
     private NametagManager nametagManager;
     private TabColorUpdater tabUpdater;
     private EthosChatPlaceholders placeholders;
+    private boolean tabOwned;
 
     @Override
     public void onEnable() {
@@ -65,49 +65,67 @@ public class EthosChat extends JavaPlugin {
                 () -> getConfig().getString("placeholders.karma", "");
         java.util.function.Supplier<String> titleWrap =
                 () -> getConfig().getString("placeholders.title-wrap", "<title>");
-        ChatListener listener = new ChatListener(colorManager, rpNameManager,
-                messages,
-                () -> getConfig().getString("format", DEFAULT_FORMAT),
-                this::loadLocalChatConfig, pingThresholds,
-                titlePlaceholder, titleWrap);
-        getServer().getPluginManager().registerEvents(listener, this);
+        boolean chatOwned = ownsFeature(
+                "ownership.chat", "EssentialsChat", "CarbonChat", "ChatControlRed");
+        if (chatOwned) {
+            ChatListener listener = new ChatListener(colorManager, rpNameManager,
+                    messages,
+                    () -> getConfig().getString("format", DEFAULT_FORMAT),
+                    this::loadLocalChatConfig, pingThresholds,
+                    titlePlaceholder, titleWrap);
+            getServer().getPluginManager().registerEvents(listener, this);
+            getLogger().info("Internal chat renderer enabled.");
+        } else {
+            getLogger().info("Internal chat renderer disabled; an external plugin owns chat.");
+        }
         applyPermissions();
         tabUpdater = new TabColorUpdater(colorManager, rpNameManager,
                 this::loadTabConfig, pingThresholds,
                 titlePlaceholder, karmaPlaceholder, titleWrap);
-        tabUpdater.startUpdateTask(this, loadTabUpdateInterval());
-        getServer().getPluginManager().registerEvents(tabUpdater, this);
-        afkManager = new AfkManager(this, messages,
-                () -> Math.max(0L,
-                        getConfig().getLong("afk.auto-after-seconds", 300L)));
-        afkManager.start();
-        getServer().getPluginManager().registerEvents(afkManager, this);
-        nametagManager = new NametagManager(
-                rpNameManager, colorManager, this, this::loadNametagConfig);
-        getServer().getPluginManager().registerEvents(nametagManager, this);
+        tabOwned = getConfig().getBoolean("tab.enabled", true)
+                && ownsFeature("ownership.tab-list", "TAB");
+        if (tabOwned) {
+            tabUpdater.startUpdateTask(this, loadTabUpdateInterval());
+            getServer().getPluginManager().registerEvents(tabUpdater, this);
+            getLogger().info("Internal tab-list renderer enabled.");
+        } else {
+            getLogger().info("Internal tab-list renderer disabled; an external plugin owns it.");
+        }
+        boolean nametagsOwned = ownsFeature("ownership.nametags", "TAB");
+        if (nametagsOwned) {
+            nametagManager = new NametagManager(
+                    rpNameManager, colorManager, this, this::loadNametagConfig);
+            getServer().getPluginManager().registerEvents(nametagManager, this);
+            getLogger().info("Internal nametag renderer enabled.");
+        } else {
+            getLogger().info("Internal nametag renderer disabled; an external plugin owns it.");
+        }
+        java.util.function.Consumer<org.bukkit.entity.Player> nametagRefresh =
+                nametagManager != null ? nametagManager::refreshNametag : ignored -> { };
         ChatColorCommand colorCommand = new ChatColorCommand(
-                colorManager, messages, tabUpdater, nametagManager);
+                colorManager, messages,
+                tabOwned ? tabUpdater::updateTabName : ignored -> { },
+                nametagRefresh);
         getCommand("chatcolor").setExecutor(colorCommand);
         getCommand("chatcolor").setTabCompleter(colorCommand);
         RpNameCommand rpNameCommand =
-                new RpNameCommand(rpNameManager, messages, nametagManager);
+                new RpNameCommand(rpNameManager, messages, nametagRefresh);
         getCommand("rpname").setExecutor(rpNameCommand);
         getCommand("rpname").setTabCompleter(rpNameCommand);
         RpRaceCommand rpRaceCommand =
-                new RpRaceCommand(rpNameManager, messages, nametagManager);
+                new RpRaceCommand(rpNameManager, messages, nametagRefresh);
         getCommand("rprace").setExecutor(rpRaceCommand);
         getCommand("rprace").setTabCompleter(rpRaceCommand);
         NametagHeightCommand nametagHeightCommand =
-                new NametagHeightCommand(rpNameManager, messages, nametagManager);
+                new NametagHeightCommand(rpNameManager, messages, nametagRefresh);
         getCommand("nametagheight").setExecutor(nametagHeightCommand);
         getCommand("nametagheight").setTabCompleter(nametagHeightCommand);
         RealNameCommand realNameCommand =
                 new RealNameCommand(rpNameManager, messages);
         getCommand("realname").setExecutor(realNameCommand);
         getCommand("realname").setTabCompleter(realNameCommand);
-        getCommand("afk").setExecutor(new AfkCommand(afkManager, messages));
         getCommand("rp").setExecutor(new RpCommand(
-                rpNameManager, tabUpdater, messages));
+                rpNameManager, tabOwned ? tabUpdater::updateAll : () -> { }, messages));
         EthosChatCommand ethosChatCommand =
                 new EthosChatCommand(this, messages);
         getCommand("ethoschat").setExecutor(ethosChatCommand);
@@ -115,10 +133,7 @@ public class EthosChat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (afkManager != null) {
-            afkManager.stop();
-        }
-        if (tabUpdater != null) {
+        if (tabOwned && tabUpdater != null) {
             tabUpdater.stop();
         }
         if (placeholders != null) {
@@ -134,9 +149,14 @@ public class EthosChat extends JavaPlugin {
         reloadConfig();
         messages.reload();
         applyPermissions();
-        nametagManager.refreshAll();
-        tabUpdater.startUpdateTask(this, loadTabUpdateInterval());
-        tabUpdater.updateAll();
+        if (nametagManager != null) {
+            nametagManager.refreshAll();
+        }
+        if (tabOwned) {
+            tabUpdater.startUpdateTask(this, loadTabUpdateInterval());
+            tabUpdater.updateAll();
+        }
+        getLogger().info("Changes under ownership.* require a server restart.");
     }
 
     private void applyPermissions() {
@@ -189,7 +209,7 @@ public class EthosChat extends JavaPlugin {
         int columnGap = Math.max(PixelWidth.MIN_EXACT_PADDING,
                 getConfig().getInt("tab.column-gap", PixelWidth.MIN_EXACT_PADDING));
         return new TabColorUpdater.TabConfig(
-                getTabBoolean("tab.enabled", "tab-colors", true),
+                getConfig().getBoolean("tab.enabled", true),
                 getConfig().getBoolean("tab.show-title", false),
                 getConfig().getBoolean("tab.show-karma", true),
                 getConfig().getBoolean("tab.show-ping", true),
@@ -199,17 +219,22 @@ public class EthosChat extends JavaPlugin {
     }
 
     private long loadTabUpdateInterval() {
-        if (getConfig().contains("tab.update-interval", true)) {
-            return Math.max(1L, getConfig().getLong("tab.update-interval"));
-        }
-        return Math.max(1L, getConfig().getLong("tab-update-interval", 200L));
+        return Math.max(1L, getConfig().getLong("tab.update-interval", 200L));
     }
 
-    private boolean getTabBoolean(String path, String legacyPath,
-                                  boolean defaultValue) {
-        if (getConfig().contains(path, true)) {
-            return getConfig().getBoolean(path);
-        }
-        return getConfig().getBoolean(legacyPath, defaultValue);
+    private boolean ownsFeature(String path, String... competingPlugins) {
+        String mode = getConfig().getString(path, "auto").toLowerCase(Locale.ROOT);
+        return switch (mode) {
+            case "internal" -> true;
+            case "external" -> false;
+            case "auto" -> Arrays.stream(competingPlugins)
+                    .noneMatch(name -> getServer().getPluginManager().isPluginEnabled(name));
+            default -> {
+                getLogger().warning("Unknown " + path + " mode '" + mode
+                        + "'; using automatic ownership detection.");
+                yield Arrays.stream(competingPlugins)
+                        .noneMatch(name -> getServer().getPluginManager().isPluginEnabled(name));
+            }
+        };
     }
 }

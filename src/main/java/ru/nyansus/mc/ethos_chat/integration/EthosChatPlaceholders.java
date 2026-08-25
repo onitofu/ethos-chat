@@ -24,7 +24,7 @@ public final class EthosChatPlaceholders extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getAuthor() {
-        return "Domya SMP";
+        return "Nyansus";
     }
 
     @Override

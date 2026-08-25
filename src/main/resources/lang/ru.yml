@@ -1,7 +1,7 @@
 command:
-  no-permission: "<red>У вас нет прав для использования этой команды."
-  player-only: "<gray>Эту команду может использовать только игрок."
-  usage: "<red>Использование: /chatcolor <игрок> <цвет|#RRGGBB|reset>"
+  no-permission: "<red>У вас нет прав на использование этой команды."
+  player-only: "<red>Эту команду может использовать только игрок."
+  usage: "<yellow>Использование: <white>/chatcolor <игрок> <цвет|#RRGGBB|reset>"
   player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
   color-reset: "<green>Цвет чата для <white>{player}<green> сброшен."
   color-set: "<green>Цвет чата для <white>{player}<green> изменён на <white>{color}<green>."
@@ -9,47 +9,43 @@ command:
 
 rpname:
   no-permission: "<red>У вас нет прав для использования этой команды."
-  usage: "<red>Использование: /rpname <игрок> <имя|reset>"
+  usage: "<yellow>Использование: <white>/rpname <игрок> <имя|reset>"
   player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
   set: "<green>РП имя для <white>{player}<green> изменено на <white>{name}<green>."
   reset: "<green>РП имя для <white>{player}<green> сброшено."
 
 rprace:
   no-permission: "<red>У вас нет прав для использования этой команды."
-  usage: "<red>Использование: /rprace <игрок> <раса|reset>"
+  usage: "<yellow>Использование: <white>/rprace <игрок> <раса|reset>"
   player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
   set: "<green>Раса для <white>{player}<green> изменена на <white>{race}<green>."
   reset: "<green>Раса для <white>{player}<green> сброшена."
 
 nametagheight:
   no-permission: "<red>У вас нет прав для использования этой команды."
-  usage: "<red>Использование: /nametagheight <игрок> <смещение|reset>"
+  usage: "<yellow>Использование: <white>/nametagheight <игрок> <смещение|reset>"
   player-not-found: "<red>Игрок '<white>{player}<red>' не в сети."
   invalid: "<red>Некорректное смещение '<white>{height}<red>'. Укажите число от -10 до 10."
   set: "<green>Смещение ника для <white>{player}<green> установлено на <white>{height}<green>."
   reset: "<green>Смещение ника для <white>{player}<green> сброшено."
 
 realname:
-  usage: "<red>Использование: /realname <рп-имя>"
+  usage: "<yellow>Использование: <white>/realname <рп-имя>"
   found: "<green>РП имя '<white>{name}<green>' принадлежит игроку <white>{player}<green>."
   not-found: "<red>Игрок с РП именем '<white>{name}<red>' не найден среди онлайн игроков."
 
 admin:
   no-permission: "<red>У вас нет прав для использования этой команды."
-  usage: "<red>Использование: /domyachat reload"
+  usage: "<yellow>Использование: <white>/ethoschat reload"
   reloaded: "<green>Конфигурация перезагружена."
 
 chat:
   local-prefix: "Л"
   global-prefix: "Г"
 
-afk:
-  away: "<gray>{player} отошёл."
-  back: "<gray>{player} вернулся."
-
 rp:
-  active: "<gray>РП-режим включён."
-  inactive: "<gray>РП-режим выключен."
+  active: "<green>РП-режим включён."
+  inactive: "<yellow>РП-режим выключен."
 
 hover:
   nickname: "Ник"

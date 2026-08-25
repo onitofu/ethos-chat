@@ -2,6 +2,7 @@ package ru.nyansus.mc.ethos_chat.command;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.nyansus.mc.ethos_chat.Messages;
-import ru.nyansus.mc.ethos_chat.rpname.NametagManager;
 import ru.nyansus.mc.ethos_chat.rpname.RpNameManager;
 
 public class NametagHeightCommand implements CommandExecutor, TabCompleter {
@@ -20,13 +20,13 @@ public class NametagHeightCommand implements CommandExecutor, TabCompleter {
 
     private final RpNameManager rpNameManager;
     private final Messages messages;
-    private final NametagManager nametagManager;
+    private final Consumer<Player> nametagRefresh;
 
     public NametagHeightCommand(RpNameManager rpNameManager, Messages messages,
-                                NametagManager nametagManager) {
+                                Consumer<Player> nametagRefresh) {
         this.rpNameManager = rpNameManager;
         this.messages = messages;
-        this.nametagManager = nametagManager;
+        this.nametagRefresh = nametagRefresh;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class NametagHeightCommand implements CommandExecutor, TabCompleter {
         }
         if (args[1].equalsIgnoreCase("reset")) {
             rpNameManager.resetNametagHeight(target.getUniqueId());
-            nametagManager.refreshNametag(target);
+            nametagRefresh.accept(target);
             messages.send(sender, "nametagheight.reset", "{player}", target.getName());
             return true;
         }
@@ -57,7 +57,7 @@ public class NametagHeightCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         rpNameManager.setNametagHeight(target.getUniqueId(), height);
-        nametagManager.refreshNametag(target);
+        nametagRefresh.accept(target);
         messages.send(sender, "nametagheight.set",
                 "{player}", target.getName(), "{height}", formatHeight(height));
         return true;
